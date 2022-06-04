@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoGA", "DemoGA\DemoGA.csproj", "{E69E131C-6DB3-4BF4-A485-ABC6F59E4116}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E69E131C-6DB3-4BF4-A485-ABC6F59E4116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E69E131C-6DB3-4BF4-A485-ABC6F59E4116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E69E131C-6DB3-4BF4-A485-ABC6F59E4116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E69E131C-6DB3-4BF4-A485-ABC6F59E4116}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4CF3E37B-C253-4EF7-A994-D7C7A8E3B3DA}
+	EndGlobalSection
+EndGlobal
