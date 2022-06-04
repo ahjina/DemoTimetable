@@ -15,32 +15,158 @@ namespace DemoGA
                 name
                 main-session: string (morning / afternoon)
                 off-lessons: string[] (list "row-col")
-                subject-info {
-                    id
-                    teacher-id
+                class-subject-info {
+                    subject-info {
+                        id
+                        name
+                        lessons-per-week
+                        maximum-continous-lessons
+                        fixed-lesson: string[] (list "row-col")
+                        minimum-lesson-per-session [
+                            {
+                                section: string (morning / afternoon)
+                                num-of-lessons
+                            }
+                        ]
+                        subject-department: string (science / social)
+                    }                    
+                    teacher-info {
+                        id
+                        name
+                        ... (more config - later)
+                    }                    
                 }
             }
-        ]
-        subjects [
-            id
-            name
-            teacher-info {
-                id
-                name
-                ... (more config - later)
-            }
-            lessons-per-week
-            maximum-continous-lessons
-            fixed-lesson: string[] (list "row-col")
-            minimum-lesson-per-session [
-                section: string (morning / afternoon)
-                num-of-lessons
-            ]
-            subject-department: string (science / social)
         ]
     }
 
      */
+
+    public class TeacherInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int? MaximumLessons { get; set; }
+
+        public TeacherInfo() { }
+
+        public TeacherInfo(int Id, string Name)
+        {
+            this.Id = Id;
+            this.Name = Name;
+        }
+
+        public TeacherInfo(int Id, string Name, int? MaximumLessons)
+        {
+            this.Id = Id;
+            this.Name = Name;
+            this.MaximumLessons = MaximumLessons;
+        }
+    }
+
+    public class LessonsPerSection
+    {
+        public string Section { get; set; }
+        public int NumOfLessons { get; set; }
+
+        public LessonsPerSection() { }
+
+        public LessonsPerSection(string section, int numOfLessons)
+        {
+            Section = section;
+            NumOfLessons = numOfLessons;
+        }
+    }
+
+    public class SubjectInfo
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public int LessonsPerWeek { get; set; }
+        public int MaximumContinousLessons { get; set; }
+        public List<string>? FixedLessons { get; set; }
+        public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; }
+        public string? SubjectDepartment { get; set; }
+
+        public SubjectInfo() { }
+
+        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, List<string>? fixedLessons, List<LessonsPerSection>? minimumLessonsPerSection, string? subjectDepartment)
+        {
+            Id = id;
+            Name = name;
+            LessonsPerWeek = lessonsPerWeek;
+            MaximumContinousLessons = maximumContinousLessons;
+            FixedLessons = fixedLessons;
+            MinimumLessonsPerSection = minimumLessonsPerSection;
+            SubjectDepartment = subjectDepartment;
+        }   
+    }
+
+    public class ClassSubjectInfo
+    {
+        public SubjectInfo SubjectInfo { get; set; }
+        public TeacherInfo TeacherInfo { get; set; }        
+
+        public ClassSubjectInfo() { }
+
+        public ClassSubjectInfo(SubjectInfo subjectInfo, TeacherInfo teacherInfo)
+        {
+            SubjectInfo = subjectInfo;
+            TeacherInfo = teacherInfo;
+        }
+    }
+
+    public class ClassInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string MainSection { get; set; }
+        public List<string>? OffLessons { get; set; }
+        public List<ClassSubjectInfo> Subjects { get; set; }
+
+        public ClassInfo() { }
+
+        public ClassInfo(int id, string name, string mainSection, List<string>? offLessons, List<ClassSubjectInfo> subjects)
+        {
+            Id = id;
+            Name = name;
+            MainSection = mainSection;
+            OffLessons = offLessons;
+            Subjects = subjects;
+        }
+    }
+
+    public class GradeInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<ClassInfo> Classes { get; set; }
+
+        public GradeInfo() { }
+
+        public GradeInfo(int id, string name, List<ClassInfo> classes)
+        {
+            Id = id;
+            Name = name;
+            Classes = classes;
+        }
+    }
+
+    public class TeacherAssignedLessonsInfo
+    {
+        public int TeacherId { get; set; }
+        public List<string> AssignedLessons { get; set; }
+
+        public TeacherAssignedLessonsInfo() { }
+
+        public TeacherAssignedLessonsInfo(int teacherId, List<string> assignedLessons)
+        {
+            TeacherId = teacherId;
+            AssignedLessons = assignedLessons;
+        }   
+    }
+
+
     public class SampleModel
     {
         public int Id { get; set; }
@@ -83,9 +209,9 @@ namespace DemoGA
             models[3, 2] = new SampleModel(6, "Văn");
             models[3, 3] = new SampleModel(6, "Văn");
             models[3, 4] = new SampleModel(8, "Toán");
-            models[4, 0] = new SampleModel(8, "Toán"); 
+            models[4, 0] = new SampleModel(8, "Toán");
             models[4, 1] = new SampleModel(8, "Toán");
-            models[4, 2] = new SampleModel(3, "Hóa"); 
+            models[4, 2] = new SampleModel(3, "Hóa");
             models[4, 3] = new SampleModel(3, "Hóa");
             models[4, 4] = new SampleModel(10, "Sinh");
             models[5, 0] = new SampleModel(10, "Sinh");
