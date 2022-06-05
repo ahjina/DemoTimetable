@@ -123,17 +123,9 @@ namespace DemoGA
         public string MainSection { get; set; }
         public List<string>? OffLessons { get; set; }
         public List<ClassSubjectInfo> Subjects { get; set; }
+        public TeacherInfo HeadTeacher { get; set; }
 
         public ClassInfo() { }
-
-        public ClassInfo(int id, string name, string mainSection, List<string>? offLessons, List<ClassSubjectInfo> subjects)
-        {
-            Id = id;
-            Name = name;
-            MainSection = mainSection;
-            OffLessons = offLessons;
-            Subjects = subjects;
-        }
     }
 
     public class GradeInfo
@@ -163,6 +155,20 @@ namespace DemoGA
         {
             TeacherId = teacherId;
             AssignedLessons = assignedLessons;
+        }   
+    }
+
+    public class Lessons
+    {
+        public SubjectInfo Subject { get; set; }
+        public TeacherInfo Teacher { get; set; }
+
+        public Lessons() { }
+
+        public Lessons(SubjectInfo subject, TeacherInfo teacher)
+        {
+            Subject = subject;
+            Teacher = teacher;
         }   
     }
 
