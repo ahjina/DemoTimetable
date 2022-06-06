@@ -12,6 +12,9 @@ namespace DemoGA
         const string MORNING_SECTION = "morning";
         const string AFTERNOON_SECTION = "afternoon";
 
+        const int WEEKDAY = 6;
+        const int LESSONSPERSECTION = 5;
+
         public static List<TeacherInfo> GetListTeacher()
         {
             List<TeacherInfo> result = new List<TeacherInfo>();
@@ -91,17 +94,7 @@ namespace DemoGA
             c.Name = "11A1";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[3];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[1], teachers[2], teachers[3], teachers[4], teachers[5], teachers[6], teachers[7], teachers[8]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -112,17 +105,7 @@ namespace DemoGA
             c.Name = "11A2";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[12];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[1], teachers[2], teachers[3], teachers[12], teachers[5], teachers[6], teachers[7], teachers[8]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -133,17 +116,7 @@ namespace DemoGA
             c.Name = "11A3";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[10];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[10], teachers[3], teachers[21], teachers[13], teachers[14], teachers[7], teachers[8]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -154,17 +127,7 @@ namespace DemoGA
             c.Name = "11A4";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[21];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[10], teachers[3], teachers[21], teachers[22], teachers[14], teachers[15], teachers[16]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -175,17 +138,7 @@ namespace DemoGA
             c.Name = "11A5";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[9];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[10], teachers[3], teachers[21], teachers[13], teachers[6], teachers[15], teachers[16]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -196,17 +149,7 @@ namespace DemoGA
             c.Name = "11A6";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[13];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[18], teachers[26], teachers[21], teachers[22], teachers[6], teachers[15], teachers[16]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -217,17 +160,7 @@ namespace DemoGA
             c.Name = "11A7";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[22];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[25], teachers[26], teachers[27], teachers[22], teachers[6], teachers[23], teachers[16]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -238,17 +171,7 @@ namespace DemoGA
             c.Name = "11A8";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[28];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[25], teachers[26], teachers[27], teachers[28], teachers[6], teachers[23], teachers[16]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -259,17 +182,7 @@ namespace DemoGA
             c.Name = "11A9";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[23];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[9], teachers[18], teachers[26], teachers[27], teachers[28], teachers[6], teachers[23], teachers[24]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -280,17 +193,7 @@ namespace DemoGA
             c.Name = "11A10";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[32];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[17], teachers[29], teachers[30], teachers[31], teachers[32], teachers[14], teachers[15], teachers[24]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -301,17 +204,7 @@ namespace DemoGA
             c.Name = "11A11";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[27];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[17], teachers[29], teachers[30], teachers[31], teachers[32], teachers[14], teachers[15], teachers[24]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -322,17 +215,7 @@ namespace DemoGA
             c.Name = "11A2";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[29];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[17], teachers[29], teachers[30], teachers[31], teachers[32], teachers[14], teachers[15], teachers[24]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -343,17 +226,7 @@ namespace DemoGA
             c.Name = "11A13";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[24];
-
-            // Sử - Hóa - Lý - Văn - Toán - Anh - Sinh - Địa
-            tempTeachers.AddRange(new List<TeacherInfo>
-            {
-                teachers[17], teachers[29], teachers[30], teachers[31], teachers[32], teachers[14], teachers[15], teachers[24]
-            });
-
-            tempCsi = CreateList(tempTeachers, subjects, teachers[0], c.HeadTeacher);
-            classSubjectInfos.AddRange(tempCsi);
-
-            c.Subjects = classSubjectInfos;
+            c.Subjects = subjects;
 
             result.Add(c);
             #endregion
@@ -361,33 +234,547 @@ namespace DemoGA
             return result;
         }
 
-        private static List<ClassSubjectInfo> CreateList(List<TeacherInfo> teacherIndex, List<SubjectInfo> subjectIndex, TeacherInfo schoolAdmin, TeacherInfo headTeacher)
+        public static Lessons[,] GetInputLessons(List<SubjectInfo> subjects, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
         {
-            List<ClassSubjectInfo> result = new List<ClassSubjectInfo>();
+            Lessons[,] result = new Lessons[WEEKDAY, LESSONSPERSECTION];
+            int row = 0, column = 0;
 
-            // SHDC
-            ClassSubjectInfo csi = new ClassSubjectInfo();
-            csi.TeacherInfo = schoolAdmin;
-            csi.SubjectInfo = subjectIndex[0];
-            result.Add(csi);
+            int index = 1;
 
-            // SHCN
-            csi = new ClassSubjectInfo();
-            csi.TeacherInfo = headTeacher;
-            csi.SubjectInfo = subjectIndex[1];
-            result.Add(csi);
-
-            // 8 subject
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < subjects.Count; i++)
             {
-                csi = new ClassSubjectInfo();
-                csi.TeacherInfo = teacherIndex[i];
-                csi.SubjectInfo = subjectIndex[i];
+                if (row == WEEKDAY) break;
+                TeachingDistribution? td = teachingDistributions.Where(x => x.SubjectId.Any(y => y == subjects[i].Id)).FirstOrDefault();
 
-                result.Add(csi);
+                if (td != null)
+                {
+                    TeacherInfo? teacher = teachers.Find(x => x.Id == td.TeacherId);
+
+                    if (teacher != null)
+                    {
+                        for (int j = 0; j < subjects[i].LessonsPerWeek; j++)
+                        {
+                            if (column == LESSONSPERSECTION)
+                            {
+                                row++;
+                                column = 0;
+                            }
+
+                            Lessons lessons = new Lessons();
+                            lessons.Id = index;
+                            lessons.Subject = subjects[i];
+                            lessons.Teacher = teacher;
+
+                            result[row, column] = lessons;
+                            column++;
+
+                            index++;
+                        }
+                    }
+                }
             }
 
             return result;
+        }
+
+        public static List<TeachingDistribution> GetTeachingDistributions()
+        {
+            List<TeachingDistribution> result = new List<TeachingDistribution>();
+
+            TeachingDistribution td = new TeachingDistribution();
+            List<int> classesId = new List<int>();
+
+            // Teacher 1
+            td.TeacherId = 1;
+            td.SubjectId = new List<int>();
+            td.SubjectId.AddRange(new List<int> { 1, 2 });
+            classesId.AddRange(new List<int>
+            {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+            result.Add(td);
+
+            // Teacher 2
+            td = new TeachingDistribution();
+            td.TeacherId = 2;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(3);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 3
+            td = new TeachingDistribution();
+            td.TeacherId = 3;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(4);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 4
+            td = new TeachingDistribution();
+            td.TeacherId = 4;
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(5);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2, 3, 4, 5
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 5
+            td = new TeachingDistribution();
+            td.TeacherId = 5;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(6);
+
+            classesId = new List<int>();
+            classesId.Add(1);
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 6
+            td = new TeachingDistribution();
+            td.TeacherId = 6;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(7);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 7
+            td = new TeachingDistribution();
+            td.TeacherId = 7;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(8);
+
+            classesId = new List<int>(); 
+            classesId.AddRange(new List<int>
+            {
+                1, 2, 5, 6, 7, 8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 8
+            td = new TeachingDistribution();
+            td.TeacherId = 8;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(9);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2, 3
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 9
+            td = new TeachingDistribution();
+            td.TeacherId = 9;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(10);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                1, 2, 3
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 10
+            td = new TeachingDistribution();
+            td.TeacherId = 10;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(3);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                3, 4, 5, 6, 7, 8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 11
+            td = new TeachingDistribution();
+            td.TeacherId = 11;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(4);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                3, 4, 5
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 13
+            td = new TeachingDistribution();
+            td.TeacherId = 13;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(6);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                2
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 14
+            td = new TeachingDistribution();
+            td.TeacherId = 14;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(7);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                3, 5
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 15
+            td = new TeachingDistribution();
+            td.TeacherId = 15;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(8);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                3, 4, 10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 16
+            td = new TeachingDistribution();
+            td.TeacherId = 16;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(9);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                4, 5, 6, 10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 17
+            td = new TeachingDistribution();
+            td.TeacherId = 17;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(10);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                4, 5, 6, 7, 8
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 18
+            td = new TeachingDistribution();
+            td.TeacherId = 18;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(3);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 19
+            td = new TeachingDistribution();
+            td.TeacherId = 19;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(4);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                6, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 22
+            td = new TeachingDistribution();
+            td.TeacherId = 22;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(6);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                3, 4, 5, 6
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 23
+            td = new TeachingDistribution();
+            td.TeacherId = 23;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(7);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                4, 6, 7
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 24
+            td = new TeachingDistribution();
+            td.TeacherId = 24;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(9);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                7, 8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 25
+            td = new TeachingDistribution();
+            td.TeacherId = 25;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(10);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                9, 10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+            result.Add(td);
+
+            // Teacher 26
+            td = new TeachingDistribution();
+            td.TeacherId = 26;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(4);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                7, 8
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 27
+            td = new TeachingDistribution();
+            td.TeacherId = 27;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(5);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                6, 7, 8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 28
+            td = new TeachingDistribution();
+            td.TeacherId = 28;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(6);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                7, 8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 29
+            td = new TeachingDistribution();
+            td.TeacherId = 29;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(7);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                8, 9
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 30
+            td = new TeachingDistribution();
+            td.TeacherId = 30;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(4);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+            result.Add(td);
+
+            // Teacher 31
+            td = new TeachingDistribution();
+            td.TeacherId = 31;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(5);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 32
+            td = new TeachingDistribution();
+            td.TeacherId = 32;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(6);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            // Teacher 33
+            td = new TeachingDistribution();
+            td.TeacherId = 33;
+
+            td.SubjectId = new List<int>();
+            td.SubjectId.Add(7);
+
+            classesId = new List<int>();
+            classesId.AddRange(new List<int>
+            {
+                10, 11, 12, 13
+            });
+            td.ClassessId = classesId;
+
+            result.Add(td);
+
+            return result;
+        }
+
+        public static T[,] Shuffle<T>(Random random, T[,] array)
+        {
+            int lengthRow = array.GetLength(1);
+
+            for (int i = array.Length - 1; i > 0; i--)
+            {
+                int i0 = i / lengthRow;
+                int i1 = i % lengthRow;
+
+                int j = random.Next(i + 1);
+                int j0 = j / lengthRow;
+                int j1 = j % lengthRow;
+
+                T temp = array[i0, i1];
+                array[i0, i1] = array[j0, j1];
+                array[j0, j1] = temp;
+            }
+
+            return array;
         }
         #endregion
     }

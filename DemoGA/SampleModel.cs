@@ -88,7 +88,11 @@ namespace DemoGA
         public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; }
         public string? SubjectDepartment { get; set; }
 
-        public SubjectInfo() { }
+        public SubjectInfo()
+        {
+            FixedLessons = new List<string>();
+            MinimumLessonsPerSection = new List<LessonsPerSection>();
+        }
 
         public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, List<string>? fixedLessons, List<LessonsPerSection>? minimumLessonsPerSection, string? subjectDepartment)
         {
@@ -99,15 +103,19 @@ namespace DemoGA
             FixedLessons = fixedLessons;
             MinimumLessonsPerSection = minimumLessonsPerSection;
             SubjectDepartment = subjectDepartment;
-        }   
+        }
     }
 
     public class ClassSubjectInfo
     {
         public SubjectInfo SubjectInfo { get; set; }
-        public TeacherInfo TeacherInfo { get; set; }        
+        public TeacherInfo TeacherInfo { get; set; }
 
-        public ClassSubjectInfo() { }
+        public ClassSubjectInfo()
+        {
+            SubjectInfo = new SubjectInfo();
+            TeacherInfo = new TeacherInfo();
+        }
 
         public ClassSubjectInfo(SubjectInfo subjectInfo, TeacherInfo teacherInfo)
         {
@@ -122,10 +130,15 @@ namespace DemoGA
         public string Name { get; set; }
         public string MainSection { get; set; }
         public List<string>? OffLessons { get; set; }
-        public List<ClassSubjectInfo> Subjects { get; set; }
+        public List<SubjectInfo> Subjects { get; set; }
         public TeacherInfo HeadTeacher { get; set; }
 
-        public ClassInfo() { }
+        public ClassInfo()
+        {
+            OffLessons = new List<string>();
+            Subjects = new List<SubjectInfo>();
+            HeadTeacher = new TeacherInfo();
+        }
     }
 
     public class GradeInfo
@@ -134,7 +147,10 @@ namespace DemoGA
         public string Name { get; set; }
         public List<ClassInfo> Classes { get; set; }
 
-        public GradeInfo() { }
+        public GradeInfo()
+        {
+            Classes = new List<ClassInfo>();
+        }
 
         public GradeInfo(int id, string name, List<ClassInfo> classes)
         {
@@ -149,27 +165,106 @@ namespace DemoGA
         public int TeacherId { get; set; }
         public List<string> AssignedLessons { get; set; }
 
-        public TeacherAssignedLessonsInfo() { }
+        public TeacherAssignedLessonsInfo()
+        {
+            AssignedLessons = new List<string>();
+        }
 
         public TeacherAssignedLessonsInfo(int teacherId, List<string> assignedLessons)
         {
             TeacherId = teacherId;
             AssignedLessons = assignedLessons;
-        }   
+        }
+    }
+
+    public class TeachingDistribution
+    {
+        public int TeacherId { get; set; }
+        public List<int> SubjectId { get; set; }
+        public List<int> ClassessId { get; set; }
+
+        public TeachingDistribution()
+        {
+            SubjectId = new List<int>();
+            ClassessId = new List<int>();
+        }
+
+        public TeachingDistribution(int teacherId, List<int> subjectId, List<int> classessId)
+        {
+            TeacherId = teacherId;
+            SubjectId = subjectId;
+            ClassessId = classessId;
+        }
     }
 
     public class Lessons
     {
+        public int Id { get; set; }
         public SubjectInfo Subject { get; set; }
         public TeacherInfo Teacher { get; set; }
 
-        public Lessons() { }
-
-        public Lessons(SubjectInfo subject, TeacherInfo teacher)
+        public Lessons()
         {
-            Subject = subject;
-            Teacher = teacher;
-        }   
+            Subject = new SubjectInfo();
+            Teacher = new TeacherInfo();
+        }
+    }
+
+    public class Timetable
+    {
+        public ClassInfo? ClassInfo { get; set; }
+        public Lessons[,]? Lessons { get; set; }
+        public int Score { get; set; }
+
+        public Timetable()
+        {
+            Lessons = new Lessons[6, 5];
+            ClassInfo = new ClassInfo();
+            Score = 0;
+        }
+
+        public Timetable(ClassInfo? classInfo)
+        {
+            Lessons = new Lessons[6, 5];
+            ClassInfo = classInfo;
+            Score = 0;
+        }
+
+        public Timetable(ClassInfo? classInfo, Lessons[,]? lessons)
+        {
+            ClassInfo = classInfo;
+            Lessons = lessons;
+            Score = 0;
+        }
+    }
+
+    public class TimetableContainer
+    {
+        public List<Timetable> Timetables { get; set; }
+
+        public TimetableContainer()
+        {
+            Timetables = new List<Timetable>();
+        }
+
+        public TimetableContainer(List<Timetable> timetables)
+        {
+            Timetables = timetables;
+        }
+    }
+
+    public class MaximumLessons
+    {
+        public int SubjectId { get; set; }
+        public int CurentLessons { get; set; }
+
+        public MaximumLessons() { }
+
+        public MaximumLessons(int subjectId, int curentContinousLessons)
+        {
+            SubjectId = subjectId;
+            CurentLessons = curentContinousLessons;
+        }
     }
 
 
@@ -229,26 +324,7 @@ namespace DemoGA
             this.Models = models;
         }
 
-        public static T[,] Shuffle<T>(Random random, T[,] array)
-        {
-            int lengthRow = array.GetLength(1);
 
-            for (int i = array.Length - 1; i > 0; i--)
-            {
-                int i0 = i / lengthRow;
-                int i1 = i % lengthRow;
-
-                int j = random.Next(i + 1);
-                int j0 = j / lengthRow;
-                int j1 = j % lengthRow;
-
-                T temp = array[i0, i1];
-                array[i0, i1] = array[j0, j1];
-                array[j0, j1] = temp;
-            }
-
-            return array;
-        }
     }
 
     public class SampleModelContainer

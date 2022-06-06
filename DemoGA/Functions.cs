@@ -8,75 +8,93 @@ namespace DemoGA
 {
     public static class Functions
     {
-        public static List<SampleModelList> GetInput(int n_pop)
+
+        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<SubjectInfo> subjects, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
         {
-            List<SampleModelList> result = new List<SampleModelList>();
+            List<Timetable> result = new List<Timetable>();
 
             // Get samples
-            SampleModelList list1 = new SampleModelList();
-
-            result.AddRange(new List<SampleModelList> { list1 });
+            Lessons[,] lessons = InitData.GetInputLessons(subjects, teachers, teachingDistributions);
 
             for (int i = 0; i < n_pop; i++)
             {
-                SampleModelList newList = new SampleModelList();
-                newList.Models = SampleModelList.Shuffle(new Random(), result[i].Models);
-                result.AddRange(new List<SampleModelList> { newList });
+                Timetable t = new Timetable(classInfo);
+                t.Lessons = InitData.Shuffle(new Random(), lessons);
+
+                result.Add(t);
             }
 
             return result;
         }
 
-        public static int EvaluationFitness(SampleModelList sample)
+        public static int EvaluationFitness(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             int score = 0;
-            List<MaximumLessonInfo> maxLessons = new List<MaximumLessonInfo>();
+
+
+            List<MaximumLessons> trackingML = new List<MaximumLessons>();
+            Lessons[,] lessons = sample.Lessons;
 
             // Loop through row (first dimenson) => Thứ
-            for (int row = 0; row < sample.Models.GetLength(0); row++)
+            for (int row = 0; row < lessons.GetLength(0); row++)
             {
-                string currentLesson = "";
+                int currentLessonId = 0;
                 int currentLessonCount = 0;
 
-                // Apply rule: maximum adjacent lessons
-                for (int column = 0; column < sample.Models.GetLength(1); column++)
+                for (int column = 0; column < lessons.GetLength(1); column++)
                 {
-                    if (currentLesson == sample.Models[row, column].SubjectName) currentLessonCount++;
+                    string address = row.ToString() + "_" + column.ToString();
+
+                    // RULE 1. Not duplicate lessons same teacher
+                    var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
+
+                    if (td == null)
+                    {
+                        TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
+                        tmpTd.TeacherId = lessons[row, column].Teacher.Id;
+                        tmpTd.AssignedLessons.Add(address);
+                    }
+                    else if (td.AssignedLessons.Contains(address)) score--;
+                    else td.AssignedLessons.Add(address);
+
+                    // RULE 2. Check maximum continous lessons
+                    if (currentLessonId == lessons[row, column].Subject.Id) currentLessonCount++;
                     else
                     {
-                        currentLesson = sample.Models[row, column].SubjectName;
+                        currentLessonId = lessons[row, column].Subject.Id;
                         currentLessonCount = 1;
                     }
 
-                    if (currentLessonCount >= Rule.MaximumContinous) score--;
+                    if (currentLessonCount >= lessons[row, column].Subject.MaximumContinousLessons) score--;
 
                     // Count number of lesson
-                    var lessonIndex = maxLessons.FindIndex(x => x.SubjectId == sample.Models[row, column].Id);
 
-                    if (lessonIndex < 0)
-                        maxLessons.Add(new MaximumLessonInfo(sample.Models[row, column].Id, 1));
+                    int index = trackingML.FindIndex(x => x.SubjectId == currentLessonId);
+
+                    if (index < 0)
+                        trackingML.Add(new MaximumLessons(lessons[row, column].Id, 1));
                     else
-                        maxLessons[lessonIndex].MaximumLesson++;
+                        trackingML[index].CurentLessons++;
                 }
             }
 
-            // Apply rule: maximum lessons in timetable
-            for (int i = 0; i < Rule.MaximumLessons.Count; i++)
+            // RULE 3. Lessons per week
+            for (int i = 0; i < sample.ClassInfo.Subjects.Count; i++)
             {
-                var tmp = maxLessons.Find(x => x.SubjectId == Rule.MaximumLessons[i].SubjectId);
+                var tmp = trackingML.Find(x => x.SubjectId == sample.ClassInfo.Subjects[i].Id);
 
                 if (tmp == null) score--;
-                else if (tmp.MaximumLesson != Rule.MaximumLessons[i].MaximumLesson) score--;
+                else if (tmp.CurentLessons != sample.ClassInfo.Subjects[i].LessonsPerWeek) score--;
             }
 
             return score;
         }
 
-        public static SampleModelList Selection(List<SampleModelList> inputSamples)
+        public static Timetable Selection(List<Timetable> inputSamples, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
         {
             foreach (var item in inputSamples)
             {
-                item.Score = EvaluationFitness(item);
+                item.Score = EvaluationFitness(item, ref teacherAssignedLessonsInfos);
             }
 
             var qry = from p in inputSamples
@@ -88,105 +106,111 @@ namespace DemoGA
             return temp[0];
         }
 
-        public static List<SampleModelList> Crossover(SampleModelList p1, SampleModelList p2, double crossRate)
+        public static List<Timetable> Crossover(Timetable p1, Timetable p2, double crossRate)
         {
-            SampleModelList c1 = new SampleModelList();
-            SampleModelList c2 = new SampleModelList();
+            Timetable c1 = new Timetable();
+            Timetable c2 = new Timetable();
 
             // Check for recombination
             Random rnd = new Random();
             if (rnd.NextDouble() < crossRate)
             {
-                int pt = rnd.Next(1, p1.Models.GetLength(0) - 2);
+                int pt = rnd.Next(1, p1.Lessons.GetLength(0) - 2);
 
-                for (int i = 0; i < p1.Models.GetLength(0); i++)
+                for (int i = 0; i < p1.Lessons.GetLength(0); i++)
                 {
-                    for (int j = 0; j < p1.Models.GetLength(1); j++)
+                    for (int j = 0; j < p1.Lessons.GetLength(1); j++)
                     {
                         if (i < pt)
                         {
-                            c1.Models[i, j] = p1.Models[i, j];
-                            c2.Models[i, j] = p2.Models[i, j];
+                            c1.Lessons[i, j] = p1.Lessons[i, j];
+                            c2.Lessons[i, j] = p2.Lessons[i, j];
                         }
                         else
                         {
-                            c1.Models[i, j] = p2.Models[i, j];
-                            c2.Models[i, j] = p1.Models[i, j];
+                            c1.Lessons[i, j] = p2.Lessons[i, j];
+                            c2.Lessons[i, j] = p1.Lessons[i, j];
                         }
                     }
                 }
             }
 
-            List<SampleModelList> result = new List<SampleModelList>();
+            List<Timetable> result = new List<Timetable>();
 
-            result.AddRange(new List<SampleModelList> { c1, c2 });
+            result.AddRange(new List<Timetable> { c1, c2 });
 
             return result;
         }
 
-        public static void Mutation(ref SampleModelList sample, double mutationRate)
+        public static void Mutation(ref Timetable sample, double mutationRate)
         {
-            for (int i = 1; i < sample.Models.Length; i++)
+            for (int i = 1; i < sample.Lessons.Length; i++)
             {
                 Random rnd = new Random();
                 if (rnd.NextDouble() < mutationRate)
                 {
-                    for (int row = 0; row < sample.Models.GetLength(0); row++)
+                    for (int row = 0; row < sample.Lessons.GetLength(0); row++)
                     {
-                        for (int col = 1; col < sample.Models.GetLength(1); col++)
+                        for (int col = 1; col < sample.Lessons.GetLength(1); col++)
                         {
-                            var temp = sample.Models[row, col];
-                            sample.Models[row, col] = sample.Models[row, col - 1];
-                            sample.Models[row, col - 1] = temp;
+                            var temp = sample.Lessons[row, col];
+                            sample.Lessons[row, col] = sample.Lessons[row, col - 1];
+                            sample.Lessons[row, col - 1] = temp;
                         }
                     }
                 }
             }
         }
 
-        public static void GeneticAlgorithm(int n_iter, int n_pop, double r_cross, double r_mut)
+        public static void GeneticAlgorithm2(int n_iter, int n_pop, double r_cross, double r_mut, ref Timetable timeTable, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             // Get input sample list
             int n_pop_loop = n_pop / 2;
             if (n_pop_loop < 2) n_pop_loop = 2;
 
-            List<SampleModelContainer> sampleContainer = new List<SampleModelContainer>();
+            int classId = timeTable.ClassInfo.Id;
+            List<SubjectInfo> subjects = InitData.GetListSubject();
+            List<TeacherInfo> teachers = InitData.GetListTeacher();
+            List<TeachingDistribution> teachingDistributions = InitData.GetTeachingDistributions();
+            List<TeachingDistribution> td = teachingDistributions.Where(x => x.ClassessId.Any(y => y == classId)).ToList();
+
+            List<TimetableContainer> sampleContainer = new List<TimetableContainer>();
 
             for (int i = 0; i < n_pop; i++)
             {
-                List<SampleModelList> input = GetInput(n_pop_loop);
+                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, subjects, teachers, td);
 
-                sampleContainer.Add(new SampleModelContainer(input));
+                sampleContainer.Add(new TimetableContainer(input));
             }
 
             // Tracking best solution
-            SampleModelList best = sampleContainer[0].ListSample[0];
-            int bestScore = EvaluationFitness(sampleContainer[0].ListSample[0]);
+            Timetable best = sampleContainer[0].Timetables[0];
+            int bestScore = EvaluationFitness(sampleContainer[0].Timetables[0], ref teacherAssignedLessons);
 
-            SampleModelContainer selectedPopContainer = new SampleModelContainer();
+            TimetableContainer selectedPopContainer = new TimetableContainer();
             // Enumerate generations
             for (int i = 0; i < n_pop; i++)
             {
-                SampleModelList selectionList = Selection(sampleContainer[i].ListSample);
+                Timetable selectionList = Selection(sampleContainer[i].Timetables, ref teacherAssignedLessons);
 
-                selectedPopContainer.ListSample.Add(selectionList);
+                selectedPopContainer.Timetables.Add(selectionList);
             }
 
             for (int n_i = 0; n_i < n_iter; n_i++)
             {
-                List<SampleModelList> children = new List<SampleModelList>();
+                List<Timetable> children = new List<Timetable>();
 
                 for (int i = 0; i < n_pop; i = i + 2)
                 {
-                    SampleModelList p1 = selectedPopContainer.ListSample[i];
-                    SampleModelList p2 = selectedPopContainer.ListSample[i + 1];
+                    Timetable p1 = selectedPopContainer.Timetables[i];
+                    Timetable p2 = selectedPopContainer.Timetables[i + 1];
 
                     // Crossover and mutation
-                    List<SampleModelList> c = Crossover(p1, p2, r_cross);
+                    List<Timetable> c = Crossover(p1, p2, r_cross);
 
                     for (int j = 0; j < c.Count; j++)
                     {
-                        SampleModelList child = c[j];
+                        Timetable child = c[j];
 
                         Mutation(ref child, r_mut);
 
@@ -197,10 +221,10 @@ namespace DemoGA
                 // Get result with best score
                 for (int i = 0; i < children.Count; i++)
                 {
-                    children[i].Score = EvaluationFitness(children[i]);
+                    children[i].Score = EvaluationFitness(children[i], ref teacherAssignedLessons);
                 }
 
-                SampleModelList temp = Selection(children);
+                Timetable temp = Selection(children, ref teacherAssignedLessons);
 
                 if (temp.Score >= bestScore) best = temp;
             }
@@ -209,16 +233,23 @@ namespace DemoGA
 
             // Print result to screen
             Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("Lớp {0}", timeTable.ClassInfo.Name);
             Console.WriteLine("Thứ 2 || Thứ 3 || Thứ 4 || Thứ 5 || Thứ 6 || Thứ 7");
 
-            for (int i = 0; i < best.Models.GetLength(1); i++)
+            for (int i = 0; i < best.Lessons.GetLength(1); i++)
             {
-                SampleModel[,] temp = best.Models;
+                Lessons[,] temp = best.Lessons;
 
-                Console.WriteLine("{0} || {1} || {2} || {3} || {4} || {5}", temp[0, i].SubjectName, temp[1, i].SubjectName, temp[2, i].SubjectName, temp[3, i].SubjectName, temp[4, i].SubjectName, temp[5, i].SubjectName);
+                Console.WriteLine("{0} || {1} || {2} || {3} || {4} || {5}", 
+                    temp[0, i].Subject.Name + " - " + temp[0, i].Teacher.Name, 
+                    temp[1, i].Subject.Name + " - " + temp[1, i].Teacher.Name, 
+                    temp[2, i].Subject.Name + " - " + temp[2, i].Teacher.Name, 
+                    temp[3, i].Subject.Name + " - " + temp[3, i].Teacher.Name, 
+                    temp[4, i].Subject.Name + " - " + temp[4, i].Teacher.Name, 
+                    temp[5, i].Subject.Name + " - " + temp[5 , i].Teacher.Name);
             }
 
-            //
+            timeTable = best;
         }
     }
 }

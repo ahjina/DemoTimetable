@@ -3,6 +3,7 @@ using DemoGA;
 
 /*
  * 
+DIMENSION 1 || DIMENSION 2
 Thứ     || Buổi SÁNG - Tiết
 =========================================================
 Thứ 2   || Tiết 1 [0,0] || Tiết 2 [0,1] || Tiết 3 [0,2] || Tiết 4 [0,3] || Tiết 5 [0,4]
@@ -27,6 +28,26 @@ int n_pop = 20;
 double r_cross = 0.9;
 double r_mut = 0.05;
 
-Functions.GeneticAlgorithm(n_iter, n_pop, r_cross, r_mut);
+GradeInfo gradeInfo = new GradeInfo();
+
+gradeInfo.Id = 11;
+gradeInfo.Name = "Khối 11";
+
+List<TeacherInfo> teachers = InitData.GetListTeacher();
+List<SubjectInfo> subjects = InitData.GetListSubject();
+
+gradeInfo.Classes = InitData.GetListClass(teachers, subjects);
+
+List<TeacherAssignedLessonsInfo> teacherAssignedLessons = new List<TeacherAssignedLessonsInfo>();
+List<Timetable> listTimetable = new List<Timetable>();
+
+for (int i = 0; i < gradeInfo.Classes.Count; i++)
+{
+    Timetable timetable = new Timetable(gradeInfo.Classes[i]);
+
+    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref teacherAssignedLessons);
+
+    listTimetable.Add(timetable);
+}
 
 Console.ReadLine();
