@@ -59,34 +59,41 @@ namespace DemoGA
             return result;
         }
 
-        public static List<SubjectInfo> GetListSubject()
+        public static List<SubjectInfo> GetListSubject(string section)
         {
             List<SubjectInfo> result = new List<SubjectInfo>();
 
             result.AddRange(new List<SubjectInfo> {
-                new SubjectInfo(1, "SHDC", 1, 1, null, null, null),
-                new SubjectInfo(2, "SHCN", 1, 1, null, null, null),
-                new SubjectInfo(3, "Sử", 2, 2, null, null, null),
-                new SubjectInfo(4, "Hóa", 4, 2, null, null, null),
-                new SubjectInfo(5, "Lý", 4, 2, null, null, null),
-                new SubjectInfo(6, "Văn", 5, 3, null, null, null),
-                new SubjectInfo(7, "Toán", 6, 3, null, null, null),
-                new SubjectInfo(8, "Anh", 3, 2, null, null, null),
-                new SubjectInfo(9, "Sinh", 2, 2, null, null, null),
-                new SubjectInfo(10, "Địa", 2, 2, null, null, null),
+                new SubjectInfo(1, "SHDC", 1, 1, new List<string>(), null, null),
+                new SubjectInfo(2, "SHCN", 1, 1, new List<string>(), null, null),
+                new SubjectInfo(3, "Sử", 2, 2, new List<string>(), null, null),
+                new SubjectInfo(4, "Hóa", 4, 2, new List<string>(), null, null),
+                new SubjectInfo(5, "Lý", 4, 2, new List<string>(), null, null),
+                new SubjectInfo(6, "Văn", 5, 3, new List<string>(), null, null),
+                new SubjectInfo(7, "Toán", 6, 3, new List<string>(), null, null),
+                new SubjectInfo(8, "Anh", 3, 2, new List<string>(), null, null),
+                new SubjectInfo(9, "Sinh", 2, 2, new List<string>(), null, null),
+                new SubjectInfo(10, "Địa", 2, 2, new List<string>(), null, null),
             }
             );
+
+            if (section == MORNING_SECTION)
+            {
+                result[0].FixedLessons.Add("0_0");
+                result[1].FixedLessons.Add("0_1");
+            }
+            else if (section == AFTERNOON_SECTION)
+            {
+                result[0].FixedLessons.Add("4_4");
+                result[1].FixedLessons.Add("4_3");
+            }
 
             return result;
         }
 
-        public static List<ClassInfo> GetListClass(List<TeacherInfo> teachers, List<SubjectInfo> subjects)
+        public static List<ClassInfo> GetListClass(List<TeacherInfo> teachers)
         {
             List<ClassInfo> result = new List<ClassInfo>();
-            List<ClassSubjectInfo> classSubjectInfos = new List<ClassSubjectInfo>();
-
-            List<TeacherInfo> tempTeachers = new List<TeacherInfo>();
-            List<ClassSubjectInfo> tempCsi = new List<ClassSubjectInfo>();
 
             #region Lớp 11A1
             ClassInfo c = new ClassInfo();
@@ -94,7 +101,7 @@ namespace DemoGA
             c.Name = "11A1";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[3];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -105,7 +112,7 @@ namespace DemoGA
             c.Name = "11A2";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[12];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -116,7 +123,7 @@ namespace DemoGA
             c.Name = "11A3";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[10];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -127,7 +134,7 @@ namespace DemoGA
             c.Name = "11A4";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[21];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -138,7 +145,7 @@ namespace DemoGA
             c.Name = "11A5";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[9];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -149,7 +156,7 @@ namespace DemoGA
             c.Name = "11A6";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[13];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -160,7 +167,7 @@ namespace DemoGA
             c.Name = "11A7";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[22];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -171,7 +178,7 @@ namespace DemoGA
             c.Name = "11A8";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[28];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -182,7 +189,7 @@ namespace DemoGA
             c.Name = "11A9";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[23];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -193,7 +200,7 @@ namespace DemoGA
             c.Name = "11A10";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[32];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -204,7 +211,7 @@ namespace DemoGA
             c.Name = "11A11";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[27];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -215,7 +222,7 @@ namespace DemoGA
             c.Name = "11A2";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[29];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -226,7 +233,7 @@ namespace DemoGA
             c.Name = "11A13";
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[24];
-            c.Subjects = subjects;
+            c.Subjects = GetListSubject(c.MainSection);
 
             result.Add(c);
             #endregion
@@ -240,6 +247,34 @@ namespace DemoGA
             int row = 0, column = 0;
 
             int index = 1;
+
+            // Assign fixed subjects
+            var subjectHFL = subjects.Where(x => x.FixedLessons.Count > 0).ToList();
+            var listFixedAddress = new List<string>();
+
+            foreach (var s in subjectHFL)
+            {
+                var t = teachingDistributions.Where(x => x.SubjectId.Any(y => y == s.Id)).FirstOrDefault();
+                TeacherInfo? teacher = teachers.Find(x => x.Id == t.TeacherId);
+
+                foreach (var address in s.FixedLessons)
+                {
+                    var r = Convert.ToInt32(address.Split('_')[0]);
+                    var c = Convert.ToInt32(address.Split('_')[1]);
+
+                    Lessons l = new Lessons();
+                    l.Id = index;
+                    l.Subject = s;
+                    l.Teacher = teacher;
+
+                    result[r, c] = l;
+
+                    listFixedAddress.Add(address);
+
+                    index++;
+                }
+            }
+
 
             for (int i = 0; i < subjects.Count; i++)
             {
@@ -260,15 +295,23 @@ namespace DemoGA
                                 column = 0;
                             }
 
-                            Lessons lessons = new Lessons();
-                            lessons.Id = index;
-                            lessons.Subject = subjects[i];
-                            lessons.Teacher = teacher;
+                            string address = row.ToString() + "_" + column.ToString();
 
-                            result[row, column] = lessons;
-                            column++;
+                            if (listFixedAddress.Contains(address))
+                            {
+                                column++;
+                            } else
+                            {
+                                Lessons lessons = new Lessons();
+                                lessons.Id = index;
+                                lessons.Subject = subjects[i];
+                                lessons.Teacher = teacher;
 
-                            index++;
+                                result[row, column] = lessons;
+                                column++;
+
+                                index++;
+                            }
                         }
                     }
                 }
@@ -378,7 +421,7 @@ namespace DemoGA
             td.SubjectId = new List<int>();
             td.SubjectId.Add(8);
 
-            classesId = new List<int>(); 
+            classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
                 1, 2, 5, 6, 7, 8, 9

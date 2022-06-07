@@ -34,9 +34,8 @@ gradeInfo.Id = 11;
 gradeInfo.Name = "Khối 11";
 
 List<TeacherInfo> teachers = InitData.GetListTeacher();
-List<SubjectInfo> subjects = InitData.GetListSubject();
 
-gradeInfo.Classes = InitData.GetListClass(teachers, subjects);
+gradeInfo.Classes = InitData.GetListClass(teachers);
 
 List<TeacherAssignedLessonsInfo> teacherAssignedLessons = new List<TeacherAssignedLessonsInfo>();
 List<Timetable> listTimetable = new List<Timetable>();

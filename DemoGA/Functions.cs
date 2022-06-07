@@ -9,12 +9,12 @@ namespace DemoGA
     public static class Functions
     {
 
-        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<SubjectInfo> subjects, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
+        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
         {
             List<Timetable> result = new List<Timetable>();
 
             // Get samples
-            Lessons[,] lessons = InitData.GetInputLessons(subjects, teachers, teachingDistributions);
+            Lessons[,] lessons = InitData.GetInputLessons(classInfo.Subjects, teachers, teachingDistributions);
 
             for (int i = 0; i < n_pop; i++)
             {
@@ -177,7 +177,6 @@ namespace DemoGA
             if (n_pop_loop < 2) n_pop_loop = 2;
 
             int classId = timeTable.ClassInfo.Id;
-            List<SubjectInfo> subjects = InitData.GetListSubject();
             List<TeacherInfo> teachers = InitData.GetListTeacher();
             List<TeachingDistribution> teachingDistributions = InitData.GetTeachingDistributions();
             List<TeachingDistribution> td = teachingDistributions.Where(x => x.ClassessId.Any(y => y == classId)).ToList();
@@ -186,7 +185,7 @@ namespace DemoGA
 
             for (int i = 0; i < n_pop; i++)
             {
-                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, subjects, teachers, td);
+                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, teachers, td);
 
                 sampleContainer.Add(new TimetableContainer(input));
             }
