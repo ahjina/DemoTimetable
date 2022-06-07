@@ -43,6 +43,8 @@ namespace DemoGA
 
                 for (int column = 0; column < lessons.GetLength(1); column++)
                 {
+                    if (lessons[row, column] == null) continue;
+
                     string address = row.ToString() + "_" + column.ToString();
 
                     // RULE 1. Not duplicate lessons same teacher
@@ -53,6 +55,8 @@ namespace DemoGA
                         TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
                         tmpTd.TeacherId = lessons[row, column].Teacher.Id;
                         tmpTd.AssignedLessons.Add(address);
+
+                        teacherAssignedLessons.Add(tmpTd);
                     }
                     else if (td.AssignedLessons.Contains(address)) score--;
                     else td.AssignedLessons.Add(address);
@@ -111,6 +115,8 @@ namespace DemoGA
             Timetable c1 = new Timetable();
             Timetable c2 = new Timetable();
 
+            c1.ClassInfo = c2.ClassInfo = p1.ClassInfo;
+
             // Check for recombination
             Random rnd = new Random();
             if (rnd.NextDouble() < crossRate)
@@ -147,7 +153,9 @@ namespace DemoGA
             for (int i = 1; i < sample.Lessons.Length; i++)
             {
                 Random rnd = new Random();
-                if (rnd.NextDouble() < mutationRate)
+                double rndDouble = rnd.NextDouble();
+
+                if (rndDouble < mutationRate)
                 {
                     for (int row = 0; row < sample.Lessons.GetLength(0); row++)
                     {
@@ -219,11 +227,6 @@ namespace DemoGA
                 }
 
                 // Get result with best score
-                for (int i = 0; i < children.Count; i++)
-                {
-                    children[i].Score = EvaluationFitness(children[i], ref teacherAssignedLessons);
-                }
-
                 Timetable temp = Selection(children, ref teacherAssignedLessons);
 
                 if (temp.Score >= bestScore) best = temp;
@@ -234,13 +237,13 @@ namespace DemoGA
             // Print result to screen
             Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("Lớp {0}", timeTable.ClassInfo.Name);
-            Console.WriteLine("Thứ 2 || Thứ 3 || Thứ 4 || Thứ 5 || Thứ 6 || Thứ 7");
+            Console.WriteLine("Thứ 2        || Thứ 3        || Thứ 4        || Thứ 5        || Thứ 6        || Thứ 7");
 
             for (int i = 0; i < best.Lessons.GetLength(1); i++)
             {
                 Lessons[,] temp = best.Lessons;
 
-                Console.WriteLine("{0} || {1} || {2} || {3} || {4} || {5}", 
+                Console.WriteLine("{0}      || {1}      || {2}      || {3}      || {4}      || {5}", 
                     temp[0, i].Subject.Name + " - " + temp[0, i].Teacher.Name, 
                     temp[1, i].Subject.Name + " - " + temp[1, i].Teacher.Name, 
                     temp[2, i].Subject.Name + " - " + temp[2, i].Teacher.Name, 
