@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using System.Data;
 
 namespace DemoGA
 {
@@ -21,10 +23,45 @@ namespace DemoGA
                 Timetable t = new Timetable(classInfo);
                 t.Lessons = InitData.Shuffle(new Random(), lessons);
 
+                AssignFixedLessons(classInfo.Subjects, ref t);
+
                 result.Add(t);
             }
 
             return result;
+        }
+
+        public static void AssignFixedLessons(List<SubjectInfo> subjects, ref Timetable timetable)
+        {
+            // Assign fixed subjects
+            var subjectHFL = subjects.Where(x => x.FixedLessons.Count > 0).ToList();
+
+            // Find assigned fixed subjects address in timetable
+            for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+            {
+                for (int column = 0; column < timetable.Lessons.GetLength(1); column++)
+                {
+                    var currentLesson = timetable.Lessons[row, column];
+
+                    foreach (var s in subjectHFL)
+                    {
+                        if (currentLesson.Subject.Id == s.Id)
+                        {
+                            foreach (var address in s.FixedLessons)
+                            {
+                                var r = Convert.ToInt32(address.Split('_')[0]);
+                                var c = Convert.ToInt32(address.Split('_')[1]);
+
+                                var tmpLesson = new Lessons();
+                                tmpLesson = currentLesson;
+
+                                timetable.Lessons[row, column] = timetable.Lessons[r, c];
+                                timetable.Lessons[r, c] = tmpLesson;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public static int EvaluationFitness(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
@@ -58,7 +95,7 @@ namespace DemoGA
 
                         teacherAssignedLessons.Add(tmpTd);
                     }
-                    else if (td.AssignedLessons.Contains(address)) score--;
+                    else if (td.AssignedLessons.Contains(address) && lessons[row, column].IsLock == 0) score--;
                     else td.AssignedLessons.Add(address);
 
                     // RULE 2. Check maximum continous lessons
@@ -127,6 +164,13 @@ namespace DemoGA
                 {
                     for (int j = 0; j < p1.Lessons.GetLength(1); j++)
                     {
+                        if (p1.Lessons[i, j].IsLock == 1)
+                        {
+                            c1.Lessons[i, j] = p1.Lessons[i, j];
+                            c2.Lessons[i, j] = p2.Lessons[i, j];
+                            continue;
+                        }
+
                         if (i < pt)
                         {
                             c1.Lessons[i, j] = p1.Lessons[i, j];
@@ -162,7 +206,11 @@ namespace DemoGA
                         for (int col = 1; col < sample.Lessons.GetLength(1); col++)
                         {
                             var temp = sample.Lessons[row, col];
-                            sample.Lessons[row, col] = sample.Lessons[row, col - 1];
+                            var prev = sample.Lessons[row, col - 1];
+
+                            if ((temp != null && temp.IsLock == 1) || (prev != null && prev.IsLock == 1)) continue;
+
+                            sample.Lessons[row, col] = prev;
                             sample.Lessons[row, col - 1] = temp;
                         }
                     }
@@ -231,27 +279,78 @@ namespace DemoGA
                 if (temp.Score >= bestScore) best = temp;
             }
 
-            Console.WriteLine("Best score: {0}", bestScore);
-
             // Print result to screen
             Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine("Lớp {0}", timeTable.ClassInfo.Name);
-            Console.WriteLine("Thứ 2        || Thứ 3        || Thứ 4        || Thứ 5        || Thứ 6        || Thứ 7");
-
-            for (int i = 0; i < best.Lessons.GetLength(1); i++)
-            {
-                Lessons[,] temp = best.Lessons;
-
-                Console.WriteLine("{0}      || {1}      || {2}      || {3}      || {4}      || {5}", 
-                    temp[0, i].Subject.Name + " - " + temp[0, i].Teacher.Name, 
-                    temp[1, i].Subject.Name + " - " + temp[1, i].Teacher.Name, 
-                    temp[2, i].Subject.Name + " - " + temp[2, i].Teacher.Name, 
-                    temp[3, i].Subject.Name + " - " + temp[3, i].Teacher.Name, 
-                    temp[4, i].Subject.Name + " - " + temp[4, i].Teacher.Name, 
-                    temp[5, i].Subject.Name + " - " + temp[5 , i].Teacher.Name);
-            }
+            Console.WriteLine("Lớp {0}, Best score: {1}", timeTable.ClassInfo.Name, bestScore);
+            Console.WriteLine();
 
             timeTable = best;
+
+            var fileName = timeTable.ClassInfo.Name + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
+
+            ExportExcel(best.Lessons, fileName);
+        }
+
+        public static void ExportExcel(Lessons[,] temp, string fileName)
+        {
+            XLWorkbook workbook = new XLWorkbook();
+            DataTable dt = new DataTable() { TableName = "New Worksheet" };
+            DataSet ds = new DataSet();
+
+            //input data
+            var columns = new[] { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7" };
+
+            var rows = new object[][]
+ {
+     new object[] { temp[0, 0]?.Subject?.Name + " - " + temp[0, 0]?.Teacher?.Name,
+                    temp[1, 0]?.Subject?.Name + " - " + temp[1, 0]?.Teacher?.Name,
+                    temp[2, 0]?.Subject?.Name + " - " + temp[2, 0]?.Teacher?.Name,
+                    temp[3, 0]?.Subject?.Name + " - " + temp[3, 0]?.Teacher?.Name,
+                    temp[4, 0]?.Subject?.Name + " - " + temp[4, 0]?.Teacher?.Name,
+                    temp[5, 0]?.Subject?.Name + " - " + temp[5, 0]?.Teacher?.Name},
+     new object[] { temp[0, 1]?.Subject?.Name + " - " + temp[0, 1]?.Teacher?.Name,
+                    temp[1, 1]?.Subject?.Name + " - " + temp[1, 1]?.Teacher?.Name,
+                    temp[2, 1]?.Subject?.Name + " - " + temp[2, 1]?.Teacher?.Name,
+                    temp[3, 1]?.Subject?.Name + " - " + temp[3, 1]?.Teacher?.Name,
+                    temp[4, 1]?.Subject?.Name + " - " + temp[4, 1]?.Teacher?.Name,
+                    temp[5, 1]?.Subject?.Name + " - " + temp[5, 1]?.Teacher?.Name},
+     new object[] { temp[0, 2]?.Subject?.Name + " - " + temp[0, 2]?.Teacher?.Name,
+                    temp[1, 2]?.Subject?.Name + " - " + temp[1, 2]?.Teacher?.Name,
+                    temp[2, 2]?.Subject?.Name + " - " + temp[2, 2]?.Teacher?.Name,
+                    temp[3, 2]?.Subject?.Name + " - " + temp[3, 2]?.Teacher?.Name,
+                    temp[4, 2]?.Subject?.Name + " - " + temp[4, 2]?.Teacher?.Name,
+                    temp[5, 2]?.Subject?.Name + " - " + temp[5, 2]?.Teacher?.Name},
+     new object[] { temp[0, 3]?.Subject?.Name + " - " + temp[0, 3]?.Teacher?.Name,
+                    temp[1, 3]?.Subject?.Name + " - " + temp[1, 3]?.Teacher?.Name,
+                    temp[2, 3]?.Subject?.Name + " - " + temp[2, 3]?.Teacher?.Name,
+                    temp[3, 3]?.Subject?.Name + " - " + temp[3, 3]?.Teacher?.Name,
+                    temp[4, 3]?.Subject?.Name + " - " + temp[4, 3]?.Teacher?.Name,
+                    temp[5, 3]?.Subject?.Name + " - " + temp[5, 3]?.Teacher?.Name},
+     new object[] { temp[0, 4]?.Subject?.Name + " - " + temp[0, 4]?.Teacher?.Name,
+                    temp[1, 4]?.Subject?.Name + " - " + temp[1, 4]?.Teacher?.Name,
+                    temp[2, 4]?.Subject?.Name + " - " + temp[2, 4]?.Teacher?.Name,
+                    temp[3, 4]?.Subject?.Name + " - " + temp[3, 4]?.Teacher?.Name,
+                    temp[4, 4]?.Subject?.Name + " - " + temp[4, 4]?.Teacher?.Name,
+                    temp[5, 4]?.Subject?.Name + " - " + temp[5, 4]?.Teacher?.Name},
+ };
+
+            //Add columns
+            dt.Columns.AddRange(columns.Select(c => new DataColumn(c)).ToArray());
+
+            //Add rows
+            foreach (var row in rows)
+            {
+                dt.Rows.Add(row);
+            }
+
+            //Convert datatable to dataset and add it to the workbook as worksheet
+            ds.Tables.Add(dt);
+            workbook.Worksheets.Add(ds);
+
+            //save
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string savePath = Path.Combine(desktopPath, fileName);
+            workbook.SaveAs(savePath, false);
         }
     }
 }

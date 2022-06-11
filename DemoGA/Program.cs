@@ -23,8 +23,8 @@ Thứ 6   || Tiết 1 [10,0] || Tiết 2 [10,1] || Tiết 3 [10,2] || Tiết 4 [
 Thứ 7   || Tiết 1 [11,0] || Tiết 2 [11,1] || Tiết 3 [11,2] || Tiết 4 [11,3] || Tiết 5 [11,4]  
  */
 
-int n_iter = 100;
-int n_pop = 20;
+int n_iter = 1000;
+int n_pop = 200;
 double r_cross = 0.9;
 double r_mut = 0.05;
 

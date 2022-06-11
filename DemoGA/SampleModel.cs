@@ -202,11 +202,13 @@ namespace DemoGA
         public int Id { get; set; }
         public SubjectInfo Subject { get; set; }
         public TeacherInfo Teacher { get; set; }
+        public int IsLock { get; set; }
 
         public Lessons()
         {
             Subject = new SubjectInfo();
             Teacher = new TeacherInfo();
+            IsLock = 0;
         }
     }
 
