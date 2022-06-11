@@ -64,10 +64,9 @@ namespace DemoGA
             }
         }
 
-        public static int EvaluationFitness(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
+        public static int EvaluationFitness(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons, ref List<TrackingError> err)
         {
             int score = 0;
-
 
             List<MaximumLessons> trackingML = new List<MaximumLessons>();
             Lessons[,] lessons = sample.Lessons;
@@ -95,8 +94,17 @@ namespace DemoGA
 
                         teacherAssignedLessons.Add(tmpTd);
                     }
-                    else if (td.AssignedLessons.Contains(address) && lessons[row, column].IsLock == 0) score--;
-                    else td.AssignedLessons.Add(address);
+                    else if (td.AssignedLessons.Contains(address) && lessons[row, column].IsLock == 0)
+                    {
+                        score--;
+                        var e = new TrackingError();
+                        e.ClassName = sample.ClassInfo.Name;
+                        e.Address = address;
+                        e.Reason = String.Format("Trùng tiết của gv {0} môn {1}", lessons[row, column].Teacher.Name, lessons[row, column].Subject.Name);
+
+                        err.Add(e);
+                    }
+                    else if (!td.AssignedLessons.Contains(address)) td.AssignedLessons.Add(address);
 
                     // RULE 2. Check maximum continous lessons
                     if (currentLessonId == lessons[row, column].Subject.Id) currentLessonCount++;
@@ -106,14 +114,25 @@ namespace DemoGA
                         currentLessonCount = 1;
                     }
 
-                    if (currentLessonCount >= lessons[row, column].Subject.MaximumContinousLessons) score--;
+                    if (column == 0) currentLessonCount = 1;
+
+                    if (currentLessonCount > lessons[row, column].Subject.MaximumContinousLessons)
+                    {
+                        score--;
+                        var e = new TrackingError();
+                        e.ClassName = sample.ClassInfo.Name;
+                        e.Address = address;
+                        e.Reason = String.Format("Vượt quá số tiết liên tiếp môn {0}. Tồng số tiết {1}", lessons[row, column].Subject.Name, currentLessonCount);
+
+                        err.Add(e);
+                    }
 
                     // Count number of lesson
 
                     int index = trackingML.FindIndex(x => x.SubjectId == currentLessonId);
 
                     if (index < 0)
-                        trackingML.Add(new MaximumLessons(lessons[row, column].Id, 1));
+                        trackingML.Add(new MaximumLessons(lessons[row, column].Subject.Id, 1));
                     else
                         trackingML[index].CurentLessons++;
                 }
@@ -124,18 +143,34 @@ namespace DemoGA
             {
                 var tmp = trackingML.Find(x => x.SubjectId == sample.ClassInfo.Subjects[i].Id);
 
-                if (tmp == null) score--;
-                else if (tmp.CurentLessons != sample.ClassInfo.Subjects[i].LessonsPerWeek) score--;
+                if (tmp == null)
+                {
+                    score--;
+                    var e = new TrackingError();
+                    e.ClassName = sample.ClassInfo.Name;
+                    e.Reason = String.Format("Thiếu môn {0}", sample.ClassInfo.Subjects[i].Id);
+
+                    err.Add(e);
+                }
+                else if (tmp.CurentLessons != sample.ClassInfo.Subjects[i].LessonsPerWeek)
+                {
+                    score--;
+                    var e = new TrackingError();
+                    e.ClassName = sample.ClassInfo.Name;
+                    e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", sample.ClassInfo.Subjects[i].Id);
+
+                    err.Add(e);
+                }
             }
 
             return score;
         }
 
-        public static Timetable Selection(List<Timetable> inputSamples, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
+        public static Timetable Selection(List<Timetable> inputSamples, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos, ref List<TrackingError> err)
         {
             foreach (var item in inputSamples)
             {
-                item.Score = EvaluationFitness(item, ref teacherAssignedLessonsInfos);
+                item.Score = EvaluationFitness(item, ref teacherAssignedLessonsInfos, ref err);
             }
 
             var qry = from p in inputSamples
@@ -158,7 +193,7 @@ namespace DemoGA
             Random rnd = new Random();
             if (rnd.NextDouble() < crossRate)
             {
-                int pt = rnd.Next(1, p1.Lessons.GetLength(0) - 2);
+                int pt = rnd.Next(1, p1.Lessons.Length - 2);
 
                 for (int i = 0; i < p1.Lessons.GetLength(0); i++)
                 {
@@ -239,14 +274,23 @@ namespace DemoGA
             }
 
             // Tracking best solution
+            List<TrackingError> err = new List<TrackingError>();
+
             Timetable best = sampleContainer[0].Timetables[0];
-            int bestScore = EvaluationFitness(sampleContainer[0].Timetables[0], ref teacherAssignedLessons);
+            int bestScore = EvaluationFitness(sampleContainer[0].Timetables[0], ref teacherAssignedLessons, ref err);
+            Console.WriteLine("Lớp: {0}, Best score: {1}", timeTable.ClassInfo.Name, bestScore);
+
+            for (int i = 0; i < err.Count; i++)
+            {
+                Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
+            }
 
             TimetableContainer selectedPopContainer = new TimetableContainer();
             // Enumerate generations
             for (int i = 0; i < n_pop; i++)
             {
-                Timetable selectionList = Selection(sampleContainer[i].Timetables, ref teacherAssignedLessons);
+                err = new List<TrackingError>();
+                Timetable selectionList = Selection(sampleContainer[i].Timetables, ref teacherAssignedLessons, ref err);
 
                 selectedPopContainer.Timetables.Add(selectionList);
             }
@@ -274,9 +318,21 @@ namespace DemoGA
                 }
 
                 // Get result with best score
-                Timetable temp = Selection(children, ref teacherAssignedLessons);
+                err = new List<TrackingError>();
+                Timetable temp = Selection(children, ref teacherAssignedLessons, ref err);
 
-                if (temp.Score >= bestScore) best = temp;
+                if (temp.Score > bestScore)
+                {
+                    best = temp;
+                    bestScore = temp.Score;
+
+                    Console.WriteLine("Best score: {0}", bestScore);
+
+                    for (int i = 0; i < err.Count; i++)
+                    {
+                        Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
+                    }
+                };
             }
 
             // Print result to screen
@@ -285,6 +341,8 @@ namespace DemoGA
             Console.WriteLine();
 
             timeTable = best;
+
+            GetFinalTeacherAssignedLessons(timeTable, ref teacherAssignedLessons);
 
             var fileName = timeTable.ClassInfo.Name + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
 
@@ -301,38 +359,38 @@ namespace DemoGA
             var columns = new[] { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7" };
 
             var rows = new object[][]
- {
-     new object[] { temp[0, 0]?.Subject?.Name + " - " + temp[0, 0]?.Teacher?.Name,
-                    temp[1, 0]?.Subject?.Name + " - " + temp[1, 0]?.Teacher?.Name,
-                    temp[2, 0]?.Subject?.Name + " - " + temp[2, 0]?.Teacher?.Name,
-                    temp[3, 0]?.Subject?.Name + " - " + temp[3, 0]?.Teacher?.Name,
-                    temp[4, 0]?.Subject?.Name + " - " + temp[4, 0]?.Teacher?.Name,
-                    temp[5, 0]?.Subject?.Name + " - " + temp[5, 0]?.Teacher?.Name},
-     new object[] { temp[0, 1]?.Subject?.Name + " - " + temp[0, 1]?.Teacher?.Name,
-                    temp[1, 1]?.Subject?.Name + " - " + temp[1, 1]?.Teacher?.Name,
-                    temp[2, 1]?.Subject?.Name + " - " + temp[2, 1]?.Teacher?.Name,
-                    temp[3, 1]?.Subject?.Name + " - " + temp[3, 1]?.Teacher?.Name,
-                    temp[4, 1]?.Subject?.Name + " - " + temp[4, 1]?.Teacher?.Name,
-                    temp[5, 1]?.Subject?.Name + " - " + temp[5, 1]?.Teacher?.Name},
-     new object[] { temp[0, 2]?.Subject?.Name + " - " + temp[0, 2]?.Teacher?.Name,
-                    temp[1, 2]?.Subject?.Name + " - " + temp[1, 2]?.Teacher?.Name,
-                    temp[2, 2]?.Subject?.Name + " - " + temp[2, 2]?.Teacher?.Name,
-                    temp[3, 2]?.Subject?.Name + " - " + temp[3, 2]?.Teacher?.Name,
-                    temp[4, 2]?.Subject?.Name + " - " + temp[4, 2]?.Teacher?.Name,
-                    temp[5, 2]?.Subject?.Name + " - " + temp[5, 2]?.Teacher?.Name},
-     new object[] { temp[0, 3]?.Subject?.Name + " - " + temp[0, 3]?.Teacher?.Name,
-                    temp[1, 3]?.Subject?.Name + " - " + temp[1, 3]?.Teacher?.Name,
-                    temp[2, 3]?.Subject?.Name + " - " + temp[2, 3]?.Teacher?.Name,
-                    temp[3, 3]?.Subject?.Name + " - " + temp[3, 3]?.Teacher?.Name,
-                    temp[4, 3]?.Subject?.Name + " - " + temp[4, 3]?.Teacher?.Name,
-                    temp[5, 3]?.Subject?.Name + " - " + temp[5, 3]?.Teacher?.Name},
-     new object[] { temp[0, 4]?.Subject?.Name + " - " + temp[0, 4]?.Teacher?.Name,
-                    temp[1, 4]?.Subject?.Name + " - " + temp[1, 4]?.Teacher?.Name,
-                    temp[2, 4]?.Subject?.Name + " - " + temp[2, 4]?.Teacher?.Name,
-                    temp[3, 4]?.Subject?.Name + " - " + temp[3, 4]?.Teacher?.Name,
-                    temp[4, 4]?.Subject?.Name + " - " + temp[4, 4]?.Teacher?.Name,
-                    temp[5, 4]?.Subject?.Name + " - " + temp[5, 4]?.Teacher?.Name},
- };
+             {
+                 new object[] { temp[0, 0]?.Subject?.Name + " - " + temp[0, 0]?.Teacher?.Name,
+                                temp[1, 0]?.Subject?.Name + " - " + temp[1, 0]?.Teacher?.Name,
+                                temp[2, 0]?.Subject?.Name + " - " + temp[2, 0]?.Teacher?.Name,
+                                temp[3, 0]?.Subject?.Name + " - " + temp[3, 0]?.Teacher?.Name,
+                                temp[4, 0]?.Subject?.Name + " - " + temp[4, 0]?.Teacher?.Name,
+                                temp[5, 0]?.Subject?.Name + " - " + temp[5, 0]?.Teacher?.Name},
+                 new object[] { temp[0, 1]?.Subject?.Name + " - " + temp[0, 1]?.Teacher?.Name,
+                                temp[1, 1]?.Subject?.Name + " - " + temp[1, 1]?.Teacher?.Name,
+                                temp[2, 1]?.Subject?.Name + " - " + temp[2, 1]?.Teacher?.Name,
+                                temp[3, 1]?.Subject?.Name + " - " + temp[3, 1]?.Teacher?.Name,
+                                temp[4, 1]?.Subject?.Name + " - " + temp[4, 1]?.Teacher?.Name,
+                                temp[5, 1]?.Subject?.Name + " - " + temp[5, 1]?.Teacher?.Name},
+                 new object[] { temp[0, 2]?.Subject?.Name + " - " + temp[0, 2]?.Teacher?.Name,
+                                temp[1, 2]?.Subject?.Name + " - " + temp[1, 2]?.Teacher?.Name,
+                                temp[2, 2]?.Subject?.Name + " - " + temp[2, 2]?.Teacher?.Name,
+                                temp[3, 2]?.Subject?.Name + " - " + temp[3, 2]?.Teacher?.Name,
+                                temp[4, 2]?.Subject?.Name + " - " + temp[4, 2]?.Teacher?.Name,
+                                temp[5, 2]?.Subject?.Name + " - " + temp[5, 2]?.Teacher?.Name},
+                 new object[] { temp[0, 3]?.Subject?.Name + " - " + temp[0, 3]?.Teacher?.Name,
+                                temp[1, 3]?.Subject?.Name + " - " + temp[1, 3]?.Teacher?.Name,
+                                temp[2, 3]?.Subject?.Name + " - " + temp[2, 3]?.Teacher?.Name,
+                                temp[3, 3]?.Subject?.Name + " - " + temp[3, 3]?.Teacher?.Name,
+                                temp[4, 3]?.Subject?.Name + " - " + temp[4, 3]?.Teacher?.Name,
+                                temp[5, 3]?.Subject?.Name + " - " + temp[5, 3]?.Teacher?.Name},
+                 new object[] { temp[0, 4]?.Subject?.Name + " - " + temp[0, 4]?.Teacher?.Name,
+                                temp[1, 4]?.Subject?.Name + " - " + temp[1, 4]?.Teacher?.Name,
+                                temp[2, 4]?.Subject?.Name + " - " + temp[2, 4]?.Teacher?.Name,
+                                temp[3, 4]?.Subject?.Name + " - " + temp[3, 4]?.Teacher?.Name,
+                                temp[4, 4]?.Subject?.Name + " - " + temp[4, 4]?.Teacher?.Name,
+                                temp[5, 4]?.Subject?.Name + " - " + temp[5, 4]?.Teacher?.Name},
+             };
 
             //Add columns
             dt.Columns.AddRange(columns.Select(c => new DataColumn(c)).ToArray());
@@ -351,6 +409,41 @@ namespace DemoGA
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string savePath = Path.Combine(desktopPath, fileName);
             workbook.SaveAs(savePath, false);
+        }
+
+        public static void GetFinalTeacherAssignedLessons(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
+        {
+            List<TeacherAssignedLessonsInfo> result = new List<TeacherAssignedLessonsInfo>();
+
+            List<MaximumLessons> trackingML = new List<MaximumLessons>();
+            Lessons[,] lessons = sample.Lessons;
+
+            // Loop through row (first dimenson) => Thứ
+            for (int row = 0; row < lessons.GetLength(0); row++)
+            {
+
+                for (int column = 0; column < lessons.GetLength(1); column++)
+                {
+                    if (lessons[row, column] == null) continue;
+
+                    string address = row.ToString() + "_" + column.ToString();
+
+                    // RULE 1. Not duplicate lessons same teacher
+                    var td = result.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
+
+                    if (td == null)
+                    {
+                        TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
+                        tmpTd.TeacherId = lessons[row, column].Teacher.Id;
+                        tmpTd.AssignedLessons.Add(address);
+
+                        result.Add(tmpTd);
+                    }
+                    else if (!td.AssignedLessons.Contains(address)) td.AssignedLessons.Add(address);
+                }
+            }
+
+            teacherAssignedLessons = result;
         }
     }
 }

@@ -268,4 +268,13 @@ namespace DemoGA
             CurentLessons = curentContinousLessons;
         }
     }
+
+    public class TrackingError
+    {
+        public string ClassName { get; set; }
+        public string Address { get; set; }
+        public string Reason { get; set; }
+
+        public TrackingError() { }  
+    }
 }

@@ -23,8 +23,8 @@ Thứ 6   || Tiết 1 [10,0] || Tiết 2 [10,1] || Tiết 3 [10,2] || Tiết 4 [
 Thứ 7   || Tiết 1 [11,0] || Tiết 2 [11,1] || Tiết 3 [11,2] || Tiết 4 [11,3] || Tiết 5 [11,4]  
  */
 
-int n_iter = 1000;
-int n_pop = 200;
+int n_iter = 200;
+int n_pop = 20;
 double r_cross = 0.9;
 double r_mut = 0.05;
 
@@ -44,9 +44,37 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
 {
     Timetable timetable = new Timetable(gradeInfo.Classes[i]);
 
-    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref teacherAssignedLessons);
+    var tmp = teacherAssignedLessons;
+
+    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref tmp);
 
     listTimetable.Add(timetable);
+
+    if (i == 0) teacherAssignedLessons = tmp;
+    else
+    {
+        for (int j = 0; j < tmp.Count; j++)
+        {
+            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
+
+            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
+            else
+            {
+                for (int l = 0; l < tmp[j].AssignedLessons.Count; l++)
+                {
+                    if (!teacherAssignedLessons[index].AssignedLessons.Contains(tmp[j].AssignedLessons[l]))
+                    {
+                        teacherAssignedLessons[index].AssignedLessons.Add(tmp[j].AssignedLessons[l]);
+                    }
+                }
+            }
+        }
+    }
 }
+
+//for (int i = 0; i < err.Count; i++)
+//{
+//    Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
+//}
 
 Console.ReadLine();
