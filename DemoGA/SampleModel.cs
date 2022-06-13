@@ -163,17 +163,39 @@ namespace DemoGA
     public class TeacherAssignedLessonsInfo
     {
         public int TeacherId { get; set; }
-        public List<string> AssignedLessons { get; set; }
+        public List<AssignedLessonInfo> AssignedLessonInfos { get; set; }
 
         public TeacherAssignedLessonsInfo()
         {
-            AssignedLessons = new List<string>();
+            AssignedLessonInfos = new List<AssignedLessonInfo>();
         }
 
-        public TeacherAssignedLessonsInfo(int teacherId, List<string> assignedLessons)
+        public TeacherAssignedLessonsInfo(int teacherId, List<AssignedLessonInfo> assignedLessonInfo)
         {
             TeacherId = teacherId;
-            AssignedLessons = assignedLessons;
+            AssignedLessonInfos = assignedLessonInfo;
+        }
+
+        public TeacherAssignedLessonsInfo(TeacherAssignedLessonsInfo data)
+        {
+            TeacherId = data.TeacherId;
+            AssignedLessonInfos = data.AssignedLessonInfos;
+        }
+    }
+
+    public class AssignedLessonInfo
+    {
+        public string LessonAddress { get; set; }
+        public int ClassId { get; set; }
+        public string ClassName { get; set; }
+
+        public AssignedLessonInfo() { }
+
+        public AssignedLessonInfo(string lessonAddress, int classId, string className)
+        {
+            LessonAddress = lessonAddress;
+            ClassId = classId;
+            ClassName = className;
         }
     }
 
@@ -217,12 +239,14 @@ namespace DemoGA
         public ClassInfo? ClassInfo { get; set; }
         public Lessons[,]? Lessons { get; set; }
         public int Score { get; set; }
+        public List<TrackingError> Err { get; set; }
 
         public Timetable()
         {
             Lessons = new Lessons[6, 5];
             ClassInfo = new ClassInfo();
             Score = 0;
+            Err = new List<TrackingError>();
         }
 
         public Timetable(ClassInfo? classInfo)
@@ -230,6 +254,7 @@ namespace DemoGA
             Lessons = new Lessons[6, 5];
             ClassInfo = classInfo;
             Score = 0;
+            Err = new List<TrackingError>();
         }
 
         public Timetable(ClassInfo? classInfo, Lessons[,]? lessons)
@@ -237,6 +262,7 @@ namespace DemoGA
             ClassInfo = classInfo;
             Lessons = lessons;
             Score = 0;
+            Err = new List<TrackingError>();
         }
     }
 

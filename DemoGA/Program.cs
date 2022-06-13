@@ -23,10 +23,10 @@ Thứ 6   || Tiết 1 [10,0] || Tiết 2 [10,1] || Tiết 3 [10,2] || Tiết 4 [
 Thứ 7   || Tiết 1 [11,0] || Tiết 2 [11,1] || Tiết 3 [11,2] || Tiết 4 [11,3] || Tiết 5 [11,4]  
  */
 
-int n_iter = 200;
-int n_pop = 20;
+int n_iter = 1000;
+int n_pop = 200;
 double r_cross = 0.9;
-double r_mut = 0.05;
+double r_mut = 0.2;
 
 GradeInfo gradeInfo = new GradeInfo();
 
@@ -44,7 +44,7 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
 {
     Timetable timetable = new Timetable(gradeInfo.Classes[i]);
 
-    var tmp = teacherAssignedLessons;
+    var tmp = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
 
     Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref tmp);
 
@@ -60,21 +60,18 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
             if (index < 0) teacherAssignedLessons.Add(tmp[j]);
             else
             {
-                for (int l = 0; l < tmp[j].AssignedLessons.Count; l++)
+                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
                 {
-                    if (!teacherAssignedLessons[index].AssignedLessons.Contains(tmp[j].AssignedLessons[l]))
+                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.LessonAddress == tmp[j].AssignedLessonInfos[l].LessonAddress);
+
+                    if (tmpTAL == null)
                     {
-                        teacherAssignedLessons[index].AssignedLessons.Add(tmp[j].AssignedLessons[l]);
+                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].LessonAddress, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName));
                     }
                 }
             }
         }
     }
 }
-
-//for (int i = 0; i < err.Count; i++)
-//{
-//    Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
-//}
 
 Console.ReadLine();

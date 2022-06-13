@@ -64,12 +64,13 @@ namespace DemoGA
             }
         }
 
-        public static int EvaluationFitness(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons, ref List<TrackingError> err)
+        public static int EvaluationFitness(ref Timetable sample, List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             int score = 0;
 
             List<MaximumLessons> trackingML = new List<MaximumLessons>();
             Lessons[,] lessons = sample.Lessons;
+            int classId = sample.ClassInfo.Id;
 
             // Loop through row (first dimenson) => Thứ
             for (int row = 0; row < lessons.GetLength(0); row++)
@@ -86,25 +87,21 @@ namespace DemoGA
                     // RULE 1. Not duplicate lessons same teacher
                     var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
 
-                    if (td == null)
+                    if (td != null) 
                     {
-                        TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
-                        tmpTd.TeacherId = lessons[row, column].Teacher.Id;
-                        tmpTd.AssignedLessons.Add(address);
+                        var info = td.AssignedLessonInfos.Find(x => x.LessonAddress == address && x.ClassId != classId);
 
-                        teacherAssignedLessons.Add(tmpTd);
-                    }
-                    else if (td.AssignedLessons.Contains(address) && lessons[row, column].IsLock == 0)
-                    {
-                        score--;
-                        var e = new TrackingError();
-                        e.ClassName = sample.ClassInfo.Name;
-                        e.Address = address;
-                        e.Reason = String.Format("Trùng tiết của gv {0} môn {1}", lessons[row, column].Teacher.Name, lessons[row, column].Subject.Name);
+                        if (info != null && lessons[row, column].IsLock == 0)
+                        {
+                            score--;
+                            var e = new TrackingError();
+                            e.ClassName = sample.ClassInfo.Name;
+                            e.Address = address;
+                            e.Reason = String.Format("Trùng tiết của gv {0} môn {1} lớp {2}", lessons[row, column].Teacher.Name, lessons[row, column].Subject.Name, info.ClassName);
 
-                        err.Add(e);
+                            sample.Err.Add(e);
+                        }                      
                     }
-                    else if (!td.AssignedLessons.Contains(address)) td.AssignedLessons.Add(address);
 
                     // RULE 2. Check maximum continous lessons
                     if (currentLessonId == lessons[row, column].Subject.Id) currentLessonCount++;
@@ -122,9 +119,9 @@ namespace DemoGA
                         var e = new TrackingError();
                         e.ClassName = sample.ClassInfo.Name;
                         e.Address = address;
-                        e.Reason = String.Format("Vượt quá số tiết liên tiếp môn {0}. Tồng số tiết {1}", lessons[row, column].Subject.Name, currentLessonCount);
+                        e.Reason = String.Format("Vượt quá số tiết liên tiếp môn {0}. Tổng số tiết {1}", lessons[row, column].Subject.Name, currentLessonCount);
 
-                        err.Add(e);
+                        sample.Err.Add(e);
                     }
 
                     // Count number of lesson
@@ -141,7 +138,8 @@ namespace DemoGA
             // RULE 3. Lessons per week
             for (int i = 0; i < sample.ClassInfo.Subjects.Count; i++)
             {
-                var tmp = trackingML.Find(x => x.SubjectId == sample.ClassInfo.Subjects[i].Id);
+                var subjectId = sample.ClassInfo.Subjects[i].Id;
+                var tmp = trackingML.Find(x => x.SubjectId == subjectId);
 
                 if (tmp == null)
                 {
@@ -150,7 +148,7 @@ namespace DemoGA
                     e.ClassName = sample.ClassInfo.Name;
                     e.Reason = String.Format("Thiếu môn {0}", sample.ClassInfo.Subjects[i].Id);
 
-                    err.Add(e);
+                    sample.Err.Add(e);
                 }
                 else if (tmp.CurentLessons != sample.ClassInfo.Subjects[i].LessonsPerWeek)
                 {
@@ -159,22 +157,25 @@ namespace DemoGA
                     e.ClassName = sample.ClassInfo.Name;
                     e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", sample.ClassInfo.Subjects[i].Id);
 
-                    err.Add(e);
+                    sample.Err.Add(e);
                 }
             }
 
             return score;
         }
 
-        public static Timetable Selection(List<Timetable> inputSamples, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos, ref List<TrackingError> err)
+        public static Timetable Selection(List<Timetable> inputSamples, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
         {
-            foreach (var item in inputSamples)
+            for (int i = 0; i < inputSamples.Count; i++)
             {
-                item.Score = EvaluationFitness(item, ref teacherAssignedLessonsInfos, ref err);
+                var tmp = inputSamples[i];
+                inputSamples[i].Score = EvaluationFitness(ref tmp, teacherAssignedLessonsInfos);
+
+                inputSamples[i] = tmp;
             }
 
             var qry = from p in inputSamples
-                      orderby p.Score
+                      orderby p.Score descending
                       select p;
 
             var temp = qry.ToArray();
@@ -274,23 +275,16 @@ namespace DemoGA
             }
 
             // Tracking best solution
-            List<TrackingError> err = new List<TrackingError>();
-
             Timetable best = sampleContainer[0].Timetables[0];
-            int bestScore = EvaluationFitness(sampleContainer[0].Timetables[0], ref teacherAssignedLessons, ref err);
-            Console.WriteLine("Lớp: {0}, Best score: {1}", timeTable.ClassInfo.Name, bestScore);
+            int bestScore = EvaluationFitness(ref best, teacherAssignedLessons);
 
-            for (int i = 0; i < err.Count; i++)
-            {
-                Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
-            }
+            Console.WriteLine("Start best score: {0}", bestScore);
 
             TimetableContainer selectedPopContainer = new TimetableContainer();
             // Enumerate generations
             for (int i = 0; i < n_pop; i++)
             {
-                err = new List<TrackingError>();
-                Timetable selectionList = Selection(sampleContainer[i].Timetables, ref teacherAssignedLessons, ref err);
+                Timetable selectionList = Selection(sampleContainer[i].Timetables, teacherAssignedLessons);
 
                 selectedPopContainer.Timetables.Add(selectionList);
             }
@@ -318,8 +312,24 @@ namespace DemoGA
                 }
 
                 // Get result with best score
-                err = new List<TrackingError>();
-                Timetable temp = Selection(children, ref teacherAssignedLessons, ref err);
+                Timetable temp = Selection(children, teacherAssignedLessons);
+
+                //
+                var tempMin = selectedPopContainer.Timetables[0].Score;
+                int index = 0;
+                for (int t = 1; t < selectedPopContainer.Timetables.Count; t++)
+                {
+                    if (selectedPopContainer.Timetables[t].Score < tempMin)
+                    {
+                        tempMin = selectedPopContainer.Timetables[t].Score;
+                        index = t;
+                    }
+                }
+
+                if (tempMin < temp.Score)
+                {
+                    selectedPopContainer.Timetables[index] = temp;
+                }
 
                 if (temp.Score > bestScore)
                 {
@@ -328,16 +338,24 @@ namespace DemoGA
 
                     Console.WriteLine("Best score: {0}", bestScore);
 
-                    for (int i = 0; i < err.Count; i++)
-                    {
-                        Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
-                    }
+                    //for (int i = 0; i < err.Count; i++)
+                    //{
+                    //    Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
+                    //}
                 };
+
+                if (bestScore < 0) n_i--;
+                else break;
             }
 
             // Print result to screen
             Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine("Lớp {0}, Best score: {1}", timeTable.ClassInfo.Name, bestScore);
+            Console.WriteLine("Lớp: {0}, Best score: {1}", timeTable.ClassInfo.Name, bestScore);
+
+            for (int i = 0; i < best.Err.Count; i++)
+            {
+                Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
+            }
             Console.WriteLine();
 
             timeTable = best;
@@ -435,11 +453,20 @@ namespace DemoGA
                     {
                         TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
                         tmpTd.TeacherId = lessons[row, column].Teacher.Id;
-                        tmpTd.AssignedLessons.Add(address);
+                        tmpTd.AssignedLessonInfos = new List<AssignedLessonInfo>();
+                        tmpTd.AssignedLessonInfos.Add(new AssignedLessonInfo(address, sample.ClassInfo.Id, sample.ClassInfo.Name));
 
                         result.Add(tmpTd);
                     }
-                    else if (!td.AssignedLessons.Contains(address)) td.AssignedLessons.Add(address);
+                    else
+                    {
+                        var info = td.AssignedLessonInfos.Find(x => x.LessonAddress == address && x.ClassId != sample.ClassInfo.Id);
+
+                        if (info == null)
+                        {
+                            td.AssignedLessonInfos.Add(new AssignedLessonInfo(address, sample.ClassInfo.Id, sample.ClassInfo.Name));
+                        }
+                    }
                 }
             }
 

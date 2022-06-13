@@ -150,93 +150,93 @@ namespace DemoGA
             result.Add(c);
             #endregion
 
-            //#region Lớp 11A6
-            //c = new ClassInfo();
-            //c.Id = 6;
-            //c.Name = "11A6";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[13];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A6
+            c = new ClassInfo();
+            c.Id = 6;
+            c.Name = "11A6";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[13];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A7
-            //c = new ClassInfo();
-            //c.Id = 7;
-            //c.Name = "11A7";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[22];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A7
+            c = new ClassInfo();
+            c.Id = 7;
+            c.Name = "11A7";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[22];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A8
-            //c = new ClassInfo();
-            //c.Id = 8;
-            //c.Name = "11A8";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[28];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A8
+            c = new ClassInfo();
+            c.Id = 8;
+            c.Name = "11A8";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[28];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A9
-            //c = new ClassInfo();
-            //c.Id = 9;
-            //c.Name = "11A9";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[23];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A9
+            c = new ClassInfo();
+            c.Id = 9;
+            c.Name = "11A9";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[23];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A10
-            //c = new ClassInfo();
-            //c.Id = 10;
-            //c.Name = "11A10";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[32];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A10
+            c = new ClassInfo();
+            c.Id = 10;
+            c.Name = "11A10";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[32];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A11
-            //c = new ClassInfo();
-            //c.Id = 11;
-            //c.Name = "11A11";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[27];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A11
+            c = new ClassInfo();
+            c.Id = 11;
+            c.Name = "11A11";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[27];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A12
-            //c = new ClassInfo();
-            //c.Id = 12;
-            //c.Name = "11A12";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[29];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A12
+            c = new ClassInfo();
+            c.Id = 12;
+            c.Name = "11A12";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[29];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
-            //#region Lớp 11A13
-            //c = new ClassInfo();
-            //c.Id = 13;
-            //c.Name = "11A13";
-            //c.MainSection = MORNING_SECTION;
-            //c.HeadTeacher = teachers[24];
-            //c.Subjects = GetListSubject(c.MainSection);
+            #region Lớp 11A13
+            c = new ClassInfo();
+            c.Id = 13;
+            c.Name = "11A13";
+            c.MainSection = MORNING_SECTION;
+            c.HeadTeacher = teachers[24];
+            c.Subjects = GetListSubject(c.MainSection);
 
-            //result.Add(c);
-            //#endregion
+            result.Add(c);
+            #endregion
 
             return result;
         }
