@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DemoGA;
+using System.Text;
 
 /*
  * 
@@ -39,10 +40,14 @@ gradeInfo.Classes = InitData.GetListClass(teachers);
 
 List<TeacherAssignedLessonsInfo> teacherAssignedLessons = new List<TeacherAssignedLessonsInfo>();
 List<Timetable> listTimetable = new List<Timetable>();
+List<Timetable> listTimetable2 = new List<Timetable>();
 
 for (int i = 0; i < gradeInfo.Classes.Count; i++)
 {
+    Console.OutputEncoding = Encoding.UTF8;
+    // MORNING
     Timetable timetable = new Timetable(gradeInfo.Classes[i]);
+    timetable.Section = InitData.MORNING_SECTION;
 
     var tmp = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
 
@@ -66,7 +71,40 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
 
                     if (tmpTAL == null)
                     {
-                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].LessonAddress, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName));
+                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].LessonAddress, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
+                    }
+                }
+            }
+        }
+    }
+
+    // AFTERNOON
+    Timetable timetable2 = new Timetable(gradeInfo.Classes[i]);
+    timetable2.Section = InitData.AFTERNOON_SECTION;
+
+    var tmp2 = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
+
+    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable2, ref tmp);
+
+    listTimetable2.Add(timetable2);
+
+    if (i == 0) teacherAssignedLessons = tmp;
+    else
+    {
+        for (int j = 0; j < tmp.Count; j++)
+        {
+            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
+
+            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
+            else
+            {
+                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
+                {
+                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.LessonAddress == tmp[j].AssignedLessonInfos[l].LessonAddress);
+
+                    if (tmpTAL == null)
+                    {
+                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].LessonAddress, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
                     }
                 }
             }

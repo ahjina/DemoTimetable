@@ -9,11 +9,14 @@ namespace DemoGA
     public static class InitData
     {
         #region ========== INPUTS ==========
-        const string MORNING_SECTION = "morning";
-        const string AFTERNOON_SECTION = "afternoon";
+        public const string MORNING_SECTION = "morning";
+        public const string AFTERNOON_SECTION = "afternoon";
 
-        const int WEEKDAY = 6;
-        const int LESSONSPERSECTION = 5;
+        public const int WEEKDAY = 6;
+        public const int LESSONSPERSECTION = 5;
+
+        public const string PRIMARY_SECTION = "primary_section";
+        public const string SECONDARY_SECTION = "secondary_section";
 
         public static List<TeacherInfo> GetListTeacher()
         {
@@ -32,7 +35,7 @@ namespace DemoGA
                 new TeacherInfo(9, "Quý"),
                 new TeacherInfo(10, "Linh"),
                 new TeacherInfo(11, "Xuân"),
-                new TeacherInfo(12, "Trang", 1),
+                new TeacherInfo(12, "Trang"),
                 new TeacherInfo(13, "Hải"),
                 new TeacherInfo(14, "Tú Anh"),
                 new TeacherInfo(15, "Thúy"),
@@ -40,8 +43,8 @@ namespace DemoGA
                 new TeacherInfo(17, "Mai"),
                 new TeacherInfo(18, "Liễu"),
                 new TeacherInfo(19, "Gấm"),
-                new TeacherInfo(20, "Trọng", 1),
-                new TeacherInfo(21, "Kiên", 1),
+                new TeacherInfo(20, "Trọng"),
+                new TeacherInfo(21, "Kiên"),
                 new TeacherInfo(22, "Khuyên"),
                 new TeacherInfo(23, "Dũng"),
                 new TeacherInfo(24, "Q.Trang"),
@@ -64,16 +67,20 @@ namespace DemoGA
             List<SubjectInfo> result = new List<SubjectInfo>();
 
             result.AddRange(new List<SubjectInfo> {
-                new SubjectInfo(1, "SHDC", 1, 1, new List<string>(), null, null),
-                new SubjectInfo(2, "SHCN", 1, 1, new List<string>(), null, null),
-                new SubjectInfo(3, "Sử", 2, 2, new List<string>(), null, null),
-                new SubjectInfo(4, "Hóa", 4, 2, new List<string>(), null, null),
-                new SubjectInfo(5, "Lý", 4, 2, new List<string>(), null, null),
-                new SubjectInfo(6, "Văn", 5, 3, new List<string>(), null, null),
-                new SubjectInfo(7, "Toán", 6, 3, new List<string>(), null, null),
-                new SubjectInfo(8, "Anh", 3, 2, new List<string>(), null, null),
-                new SubjectInfo(9, "Sinh", 2, 2, new List<string>(), null, null),
-                new SubjectInfo(10, "Địa", 2, 2, new List<string>(), null, null),
+                new SubjectInfo(1, "SHDC", 1, 1, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(2, "SHCN", 1, 1, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(3, "Sử", 2, 2, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(4, "Hóa", 3, 2, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(5, "Lý", 3, 2, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(6, "Văn", 5, 3, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(7, "Toán", 5, 3, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(8, "Anh", 2, 2, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(9, "Sinh", 2, 2, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(10, "Địa", 1, 1, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(11, "Tin", 1, 1, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(12, "GDCD", 1, 1, new List<string>(), PRIMARY_SECTION),
+                new SubjectInfo(13, "Thể dục", 2, 2, new List<string>(), SECONDARY_SECTION),
+                new SubjectInfo(14, "GDQP", 2, 2, new List<string>(), SECONDARY_SECTION),
             }
             );
 
@@ -198,7 +205,7 @@ namespace DemoGA
             c = new ClassInfo();
             c.Id = 10;
             c.Name = "11A10";
-            c.MainSection = MORNING_SECTION;
+            c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[32];
             c.Subjects = GetListSubject(c.MainSection);
 
@@ -209,7 +216,7 @@ namespace DemoGA
             c = new ClassInfo();
             c.Id = 11;
             c.Name = "11A11";
-            c.MainSection = MORNING_SECTION;
+            c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[27];
             c.Subjects = GetListSubject(c.MainSection);
 
@@ -220,7 +227,7 @@ namespace DemoGA
             c = new ClassInfo();
             c.Id = 12;
             c.Name = "11A12";
-            c.MainSection = MORNING_SECTION;
+            c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[29];
             c.Subjects = GetListSubject(c.MainSection);
 
@@ -231,7 +238,30 @@ namespace DemoGA
             c = new ClassInfo();
             c.Id = 13;
             c.Name = "11A13";
-            c.MainSection = MORNING_SECTION;
+            c.MainSection = AFTERNOON_SECTION;
+            c.HeadTeacher = teachers[24];
+            c.Subjects = GetListSubject(c.MainSection);
+
+            result.Add(c);
+            #endregion
+
+
+            #region Lớp 11A14
+            c = new ClassInfo();
+            c.Id = 14;
+            c.Name = "11A14";
+            c.MainSection = AFTERNOON_SECTION;
+            c.HeadTeacher = teachers[29];
+            c.Subjects = GetListSubject(c.MainSection);
+
+            result.Add(c);
+            #endregion
+
+            #region Lớp 11A15
+            c = new ClassInfo();
+            c.Id = 15;
+            c.Name = "11A15";
+            c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[24];
             c.Subjects = GetListSubject(c.MainSection);
 
@@ -300,7 +330,7 @@ namespace DemoGA
             td.SubjectId.AddRange(new List<int> { 1, 2 });
             classesId.AddRange(new List<int>
             {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
             result.Add(td);
@@ -310,12 +340,12 @@ namespace DemoGA
             td.TeacherId = 2;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(3);
+            td.SubjectId.Add(7);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2
+                1, 5, 9, 13
             });
             td.ClassessId = classesId;
 
@@ -326,12 +356,12 @@ namespace DemoGA
             td.TeacherId = 3;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(4);
+            td.SubjectId.Add(7);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2
+                2, 6, 10, 14
             });
             td.ClassessId = classesId;
 
@@ -341,12 +371,12 @@ namespace DemoGA
             td = new TeachingDistribution();
             td.TeacherId = 4;
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(5);
+            td.SubjectId.Add(7);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2, 3, 4, 5
+                3, 7, 11, 15
             });
             td.ClassessId = classesId;
 
@@ -357,10 +387,13 @@ namespace DemoGA
             td.TeacherId = 5;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(6);
+            td.SubjectId.Add(7);
 
             classesId = new List<int>();
-            classesId.Add(1);
+            classesId.AddRange(new List<int>
+            {
+                4, 8, 12
+            });
             td.ClassessId = classesId;
 
             result.Add(td);
@@ -370,12 +403,12 @@ namespace DemoGA
             td.TeacherId = 6;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(7);
+            td.SubjectId.Add(6);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2
+                 1, 5, 9 , 13
             });
             td.ClassessId = classesId;
 
@@ -386,12 +419,12 @@ namespace DemoGA
             td.TeacherId = 7;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(8);
+            td.SubjectId.Add(6);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2, 5, 6, 7, 8, 9
+                2, 6, 10, 14
             });
             td.ClassessId = classesId;
 
@@ -402,12 +435,12 @@ namespace DemoGA
             td.TeacherId = 8;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(9);
+            td.SubjectId.Add(6);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2, 3
+                3, 7, 11, 15
             });
             td.ClassessId = classesId;
 
@@ -418,12 +451,12 @@ namespace DemoGA
             td.TeacherId = 9;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(10);
+            td.SubjectId.Add(6);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                1, 2, 3
+                4, 8, 12
             });
             td.ClassessId = classesId;
 
@@ -434,12 +467,12 @@ namespace DemoGA
             td.TeacherId = 10;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(3);
+            td.SubjectId.Add(5);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                3, 4, 5, 6, 7, 8, 9
+                1, 4, 7, 10, 13
             });
             td.ClassessId = classesId;
 
@@ -450,12 +483,12 @@ namespace DemoGA
             td.TeacherId = 11;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(4);
+            td.SubjectId.Add(5);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                3, 4, 5
+                2, 5, 8, 11, 14
             });
             td.ClassessId = classesId;
 
@@ -466,12 +499,12 @@ namespace DemoGA
             td.TeacherId = 13;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(6);
+            td.SubjectId.Add(5);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                2
+                3, 6, 9 , 12, 15
             });
             td.ClassessId = classesId;
 
@@ -482,12 +515,12 @@ namespace DemoGA
             td.TeacherId = 14;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(7);
+            td.SubjectId.Add(4);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                3, 5
+                1, 4, 7, 10, 13
             });
             td.ClassessId = classesId;
 
@@ -498,12 +531,12 @@ namespace DemoGA
             td.TeacherId = 15;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(8);
+            td.SubjectId.Add(4);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                3, 4, 10, 11, 12, 13
+                2, 5, 8, 11, 14
             });
             td.ClassessId = classesId;
 
@@ -514,12 +547,12 @@ namespace DemoGA
             td.TeacherId = 16;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(9);
+            td.SubjectId.Add(4);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                4, 5, 6, 10, 11, 12, 13
+                3, 6, 9, 12, 15
             });
             td.ClassessId = classesId;
 
@@ -530,12 +563,12 @@ namespace DemoGA
             td.TeacherId = 17;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(10);
+            td.SubjectId.Add(9);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                4, 5, 6, 7, 8
+                1, 3, 5, 7, 9, 11, 13, 15
             });
             td.ClassessId = classesId;
 
@@ -546,12 +579,12 @@ namespace DemoGA
             td.TeacherId = 18;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(3);
+            td.SubjectId.Add(9);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                10, 11, 12, 13
+                2, 4, 6, 8, 10, 12, 14
             });
             td.ClassessId = classesId;
 
@@ -562,12 +595,12 @@ namespace DemoGA
             td.TeacherId = 19;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(4);
+            td.SubjectId.Add(3);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                6, 9
+                2, 4, 6, 8, 10, 12, 14
             });
             td.ClassessId = classesId;
 
@@ -578,12 +611,12 @@ namespace DemoGA
             td.TeacherId = 22;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(6);
+            td.SubjectId.Add(3);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                3, 4, 5, 6
+                1, 3, 5, 7, 9, 11, 13, 15
             });
             td.ClassessId = classesId;
 
@@ -594,12 +627,12 @@ namespace DemoGA
             td.TeacherId = 23;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(7);
+            td.SubjectId.Add(8);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                4, 6, 7
+                1, 2, 5, 6, 9, 10, 13, 14
             });
             td.ClassessId = classesId;
 
@@ -610,12 +643,12 @@ namespace DemoGA
             td.TeacherId = 24;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(9);
+            td.SubjectId.Add(8);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                7, 8, 9
+                3, 4, 7, 8, 11, 12, 15
             });
             td.ClassessId = classesId;
 
@@ -626,12 +659,12 @@ namespace DemoGA
             td.TeacherId = 25;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(10);
+            td.SubjectId.Add(12);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                9, 10, 11, 12, 13
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
             result.Add(td);
@@ -641,12 +674,12 @@ namespace DemoGA
             td.TeacherId = 26;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(4);
+            td.SubjectId.Add(10);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                7, 8
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
 
@@ -657,12 +690,12 @@ namespace DemoGA
             td.TeacherId = 27;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(5);
+            td.SubjectId.Add(11);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                6, 7, 8, 9
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
 
@@ -673,12 +706,12 @@ namespace DemoGA
             td.TeacherId = 28;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(6);
+            td.SubjectId.Add(13);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                7, 8, 9
+                1, 2, 3, 4, 5, 6, 7
             });
             td.ClassessId = classesId;
 
@@ -689,12 +722,12 @@ namespace DemoGA
             td.TeacherId = 29;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(7);
+            td.SubjectId.Add(13);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                8, 9
+                8, 9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
 
@@ -705,12 +738,12 @@ namespace DemoGA
             td.TeacherId = 30;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(4);
+            td.SubjectId.Add(14);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                10, 11, 12, 13
+                1, 2, 3, 4, 5, 6, 7, 8
             });
             td.ClassessId = classesId;
             result.Add(td);
@@ -720,44 +753,12 @@ namespace DemoGA
             td.TeacherId = 31;
 
             td.SubjectId = new List<int>();
-            td.SubjectId.Add(5);
+            td.SubjectId.Add(14);
 
             classesId = new List<int>();
             classesId.AddRange(new List<int>
             {
-                10, 11, 12, 13
-            });
-            td.ClassessId = classesId;
-
-            result.Add(td);
-
-            // Teacher 32
-            td = new TeachingDistribution();
-            td.TeacherId = 32;
-
-            td.SubjectId = new List<int>();
-            td.SubjectId.Add(6);
-
-            classesId = new List<int>();
-            classesId.AddRange(new List<int>
-            {
-                10, 11, 12, 13
-            });
-            td.ClassessId = classesId;
-
-            result.Add(td);
-
-            // Teacher 33
-            td = new TeachingDistribution();
-            td.TeacherId = 33;
-
-            td.SubjectId = new List<int>();
-            td.SubjectId.Add(7);
-
-            classesId = new List<int>();
-            classesId.AddRange(new List<int>
-            {
-                10, 11, 12, 13
+               9, 10, 11, 12, 13, 14, 15
             });
             td.ClassessId = classesId;
 

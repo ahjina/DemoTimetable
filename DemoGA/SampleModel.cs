@@ -6,42 +6,6 @@ using System.Threading.Tasks;
 
 namespace DemoGA
 {
-    /*
-     ========== MODELS ==========
-    grade {
-        classes [
-            {
-                id
-                name
-                main-session: string (morning / afternoon)
-                off-lessons: string[] (list "row-col")
-                class-subject-info {
-                    subject-info {
-                        id
-                        name
-                        lessons-per-week
-                        maximum-continous-lessons
-                        fixed-lesson: string[] (list "row-col")
-                        minimum-lesson-per-session [
-                            {
-                                section: string (morning / afternoon)
-                                num-of-lessons
-                            }
-                        ]
-                        subject-department: string (science / social)
-                    }                    
-                    teacher-info {
-                        id
-                        name
-                        ... (more config - later)
-                    }                    
-                }
-            }
-        ]
-    }
-
-     */
-
     public class TeacherInfo
     {
         public int Id { get; set; }
@@ -87,6 +51,7 @@ namespace DemoGA
         public List<string>? FixedLessons { get; set; }
         public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; }
         public string? SubjectDepartment { get; set; }
+        public string Section { get; set; }
 
         public SubjectInfo()
         {
@@ -94,15 +59,14 @@ namespace DemoGA
             MinimumLessonsPerSection = new List<LessonsPerSection>();
         }
 
-        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, List<string>? fixedLessons, List<LessonsPerSection>? minimumLessonsPerSection, string? subjectDepartment)
+        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, List<string>? fixedLessons, string section)
         {
             Id = id;
             Name = name;
             LessonsPerWeek = lessonsPerWeek;
             MaximumContinousLessons = maximumContinousLessons;
             FixedLessons = fixedLessons;
-            MinimumLessonsPerSection = minimumLessonsPerSection;
-            SubjectDepartment = subjectDepartment;
+            Section = section;
         }
     }
 
@@ -188,14 +152,16 @@ namespace DemoGA
         public string LessonAddress { get; set; }
         public int ClassId { get; set; }
         public string ClassName { get; set; }
+        public string Section { get; set; }
 
         public AssignedLessonInfo() { }
 
-        public AssignedLessonInfo(string lessonAddress, int classId, string className)
+        public AssignedLessonInfo(string lessonAddress, int classId, string className, string section)
         {
             LessonAddress = lessonAddress;
             ClassId = classId;
             ClassName = className;
+            Section = section;
         }
     }
 
@@ -240,6 +206,7 @@ namespace DemoGA
         public Lessons[,]? Lessons { get; set; }
         public int Score { get; set; }
         public List<TrackingError> Err { get; set; }
+        public string Section { get; set; }
 
         public Timetable()
         {
@@ -257,12 +224,13 @@ namespace DemoGA
             Err = new List<TrackingError>();
         }
 
-        public Timetable(ClassInfo? classInfo, Lessons[,]? lessons)
+        public Timetable(ClassInfo? classInfo, Lessons[,]? lessons, string section)
         {
             ClassInfo = classInfo;
             Lessons = lessons;
             Score = 0;
             Err = new List<TrackingError>();
+            Section = section;
         }
     }
 
