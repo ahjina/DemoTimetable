@@ -87,7 +87,7 @@ namespace DemoGA
                     // RULE 1. Not duplicate lessons same teacher
                     var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
 
-                    if (td != null) 
+                    if (td != null)
                     {
                         var info = td.AssignedLessonInfos.Find(x => x.LessonAddress == address && x.ClassId != classId);
 
@@ -97,10 +97,11 @@ namespace DemoGA
                             var e = new TrackingError();
                             e.ClassName = sample.ClassInfo.Name;
                             e.Address = address;
+                            e.ErrorType = 1;
                             e.Reason = String.Format("Trùng tiết của gv {0} môn {1} lớp {2}", lessons[row, column].Teacher.Name, lessons[row, column].Subject.Name, info.ClassName);
 
                             sample.Err.Add(e);
-                        }                      
+                        }
                     }
 
                     // RULE 2. Check maximum continous lessons
@@ -119,6 +120,7 @@ namespace DemoGA
                         var e = new TrackingError();
                         e.ClassName = sample.ClassInfo.Name;
                         e.Address = address;
+                        e.ErrorType = 2;
                         e.Reason = String.Format("Vượt quá số tiết liên tiếp môn {0}. Tổng số tiết {1}", lessons[row, column].Subject.Name, currentLessonCount);
 
                         sample.Err.Add(e);
@@ -146,6 +148,7 @@ namespace DemoGA
                     score--;
                     var e = new TrackingError();
                     e.ClassName = sample.ClassInfo.Name;
+                    e.ErrorType = 3;
                     e.Reason = String.Format("Thiếu môn {0}", sample.ClassInfo.Subjects[i].Id);
 
                     sample.Err.Add(e);
@@ -155,6 +158,7 @@ namespace DemoGA
                     score--;
                     var e = new TrackingError();
                     e.ClassName = sample.ClassInfo.Name;
+                    e.ErrorType = 4;
                     e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", sample.ClassInfo.Subjects[i].Id);
 
                     sample.Err.Add(e);
@@ -331,21 +335,21 @@ namespace DemoGA
                     selectedPopContainer.Timetables[index] = temp;
                 }
 
+                if (temp.Score > bestScore) Console.WriteLine("Best score: {0}", bestScore);
+
+                if (temp.Score == -1)
+                {
+                    ManualSwap(ref temp, teacherAssignedLessons);
+                }
+
                 if (temp.Score > bestScore)
                 {
                     best = temp;
                     bestScore = temp.Score;
-
-                    Console.WriteLine("Best score: {0}", bestScore);
-
-                    //for (int i = 0; i < err.Count; i++)
-                    //{
-                    //    Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", err[i].ClassName, err[i].Address, err[i].Reason);
-                    //}
                 };
 
                 if (bestScore < 0) n_i--;
-                else break;
+                if (bestScore == 0) break;
             }
 
             // Print result to screen
@@ -356,6 +360,7 @@ namespace DemoGA
             {
                 Console.WriteLine("Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
             }
+            Console.WriteLine(DateTime.Now.ToString("hh:mm:ss dd/MM/yyyy"));
             Console.WriteLine();
 
             timeTable = best;
@@ -367,7 +372,7 @@ namespace DemoGA
             ExportExcel(best.Lessons, fileName);
         }
 
-        public static void ExportExcel(Lessons[,] temp, string fileName)
+        private static void ExportExcel(Lessons[,] temp, string fileName)
         {
             XLWorkbook workbook = new XLWorkbook();
             DataTable dt = new DataTable() { TableName = "New Worksheet" };
@@ -429,7 +434,7 @@ namespace DemoGA
             workbook.SaveAs(savePath, false);
         }
 
-        public static void GetFinalTeacherAssignedLessons(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
+        private static void GetFinalTeacherAssignedLessons(Timetable sample, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             List<TeacherAssignedLessonsInfo> result = new List<TeacherAssignedLessonsInfo>();
 
@@ -471,6 +476,48 @@ namespace DemoGA
             }
 
             teacherAssignedLessons = result;
+        }
+
+        private static void ManualSwap(ref Timetable timetable, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
+        {
+            // Find error address
+            var e = timetable.Err.Find(x => x.ErrorType == 1);
+
+            if (e != null)
+            {
+                var err_row = Convert.ToInt32(e.Address.Split('_')[0]);
+                var err_col = Convert.ToInt32(e.Address.Split('_')[1]);
+
+                for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+                {
+                    if (timetable.Score == 0) break;
+
+                    for (int col = 0; col < timetable.Lessons.GetLength(1); col++)
+                    {
+                        if (row == err_row && col == err_col) continue;
+
+                        var t = timetable.Lessons[row, col];
+
+                        timetable.Lessons[row, col] = timetable.Lessons[err_row, err_col];
+                        timetable.Lessons[err_row, err_col] = t;
+
+                        // Evalutation Fitness again
+                        int newScore = EvaluationFitness(ref timetable, teacherAssignedLessonsInfos);
+
+                        if (newScore == 0)
+                        {
+                            timetable.Score = newScore;
+                            timetable.Err = new List<TrackingError>();
+                            break;
+                        }
+                        else
+                        {
+                            timetable.Lessons[err_row, err_col] = timetable.Lessons[row, col];
+                            timetable.Lessons[row, col] = t;
+                        }
+                    }
+                }
+            }
         }
     }
 }
