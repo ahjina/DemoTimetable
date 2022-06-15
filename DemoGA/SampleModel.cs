@@ -28,6 +28,7 @@ namespace DemoGA
         }
     }
 
+    // Số tiết tối đa / buổi
     public class LessonsPerSection
     {
         public string Section { get; set; }
@@ -46,12 +47,12 @@ namespace DemoGA
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public int LessonsPerWeek { get; set; }
-        public int MaximumContinousLessons { get; set; }
-        public List<string>? FixedLessons { get; set; }
-        public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; }
-        public string? SubjectDepartment { get; set; }
-        public string Section { get; set; }
+        public int LessonsPerWeek { get; set; } // Số tiết học / tuần
+        public int MaximumContinousLessons { get; set; } // Số tiết tối đa liên tiếp
+        public List<string>? FixedLessons { get; set; } // List địa chỉ tiết được đánh cố định
+        public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; } // Số tiết tối thiểu / buổi (chưa sử dụng)
+        public string? SubjectDepartment { get; set; } // Môn học thuộc ban: Tự nhiên / Xã hội (chưa sử dụng)
+        public string Section { get; set; } // Tiết này dạy buổi nào
 
         public SubjectInfo()
         {
@@ -92,10 +93,10 @@ namespace DemoGA
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string MainSection { get; set; }
-        public List<string>? OffLessons { get; set; }
+        public string MainSection { get; set; } // Chính khóa của lớp: buổi sáng / buổi chiều
+        public List<string>? OffLessons { get; set; } // List địa chỉ tiết được đánh nghỉ (chưa sử dụng)
         public List<SubjectInfo> Subjects { get; set; }
-        public TeacherInfo HeadTeacher { get; set; }
+        public TeacherInfo HeadTeacher { get; set; } // GVCN
 
         public ClassInfo()
         {
@@ -127,7 +128,7 @@ namespace DemoGA
     public class TeacherAssignedLessonsInfo
     {
         public int TeacherId { get; set; }
-        public List<AssignedLessonInfo> AssignedLessonInfos { get; set; }
+        public List<AssignedLessonInfo> AssignedLessonInfos { get; set; } // Thông tin các tiết đã được xếp TKB cho giáo viên
 
         public TeacherAssignedLessonsInfo()
         {
@@ -149,10 +150,10 @@ namespace DemoGA
 
     public class AssignedLessonInfo
     {
-        public string LessonAddress { get; set; }
+        public string LessonAddress { get; set; } // Địa chỉ của tiết (mảng 2 chiều, lưu kiểu row_column, vd: 2_0)
         public int ClassId { get; set; }
         public string ClassName { get; set; }
-        public string Section { get; set; }
+        public string Section { get; set; } // Tiết được xếp thuộc buổi nào
 
         public AssignedLessonInfo() { }
 
@@ -165,6 +166,7 @@ namespace DemoGA
         }
     }
 
+    // Phân công giảng dạy
     public class TeachingDistribution
     {
         public int TeacherId { get; set; }
@@ -200,13 +202,14 @@ namespace DemoGA
         }
     }
 
+    // Thời khóa biểu
     public class Timetable
     {
         public ClassInfo? ClassInfo { get; set; }
-        public Lessons[,]? Lessons { get; set; }
-        public int Score { get; set; }
-        public List<TrackingError> Err { get; set; }
-        public string Section { get; set; }
+        public Lessons[,]? Lessons { get; set; } // Danh sách tiết học, mảng 2 chiều
+        public int Score { get; set; } // 0 điểm là best
+        public List<TrackingError> Err { get; set; } // Tracking lỗi nếu TKB không tính được 0 điểm
+        public string Section { get; set; } // TKB thuộc buổi sáng / chiều
 
         public Timetable()
         {
@@ -234,6 +237,7 @@ namespace DemoGA
         }
     }
 
+    // 1 Container chứa danh sách các TKB => dùng để tạo nhiều sample TKB đầu vào để chạy thuật toán
     public class TimetableContainer
     {
         public List<Timetable> Timetables { get; set; }
@@ -249,6 +253,7 @@ namespace DemoGA
         }
     }
 
+    // Dùng để check xem số tiết tối đa được xếp TKB có bằng số tiết tối đa / tuần của môn học hay không
     public class MaximumLessons
     {
         public int SubjectId { get; set; }
@@ -263,12 +268,13 @@ namespace DemoGA
         }
     }
 
+    // Tracking lỗi
     public class TrackingError
     {
         public string ClassName { get; set; }
-        public string Address { get; set; }
-        public string Reason { get; set; }
-        public int ErrorType { get; set; }
+        public string Address { get; set; } // Địa chỉ của tiết bị lỗi, vd: 0_2
+        public string Reason { get; set; } // Lý do lỗi
+        public int ErrorType { get; set; } // Loại lỗi
 
         public TrackingError() { }  
     }

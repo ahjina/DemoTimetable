@@ -84,12 +84,13 @@ namespace DemoGA
             }
             );
 
+            // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
             if (section == MORNING_SECTION)
             {
                 result[0].FixedLessons.Add("0_0");
                 result[1].FixedLessons.Add("0_1");
             }
-            else if (section == AFTERNOON_SECTION)
+            else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
             {
                 result[0].FixedLessons.Add("4_4");
                 result[1].FixedLessons.Add("4_3");
@@ -271,6 +272,7 @@ namespace DemoGA
             return result;
         }
 
+        // Lấy danh sách các môn học xếp tuyến tính vào TKB
         public static Lessons[,] GetInputLessons(List<SubjectInfo> subjects, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
         {
             Lessons[,] result = new Lessons[WEEKDAY, LESSONSPERSECTION];
@@ -317,6 +319,7 @@ namespace DemoGA
             return result;
         }
 
+        // Phân công giảng dạy
         public static List<TeachingDistribution> GetTeachingDistributions()
         {
             List<TeachingDistribution> result = new List<TeachingDistribution>();
@@ -767,6 +770,7 @@ namespace DemoGA
             return result;
         }
 
+        // Xáo trộn các tiết trong 1 TKB => làm đầu vào để chạy thuật toán
         public static T[,] Shuffle<T>(Random random, T[,] array)
         {
             int lengthRow = array.GetLength(1);

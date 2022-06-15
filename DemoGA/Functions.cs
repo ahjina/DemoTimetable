@@ -10,7 +10,8 @@ namespace DemoGA
 {
     public static class Functions
     {
-        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<SubjectInfo> subjects, List<TeachingDistribution> teachingDistributions)
+        // Tạo TKB
+        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<SubjectInfo> subjects, List<TeachingDistribution> teachingDistributions, string section)
         {
             List<Timetable> result = new List<Timetable>();
 
@@ -21,6 +22,7 @@ namespace DemoGA
             {
                 Timetable t = new Timetable(classInfo);
                 t.Lessons = InitData.Shuffle(new Random(), lessons);
+                t.Section = section;
 
                 AssignFixedLessons(subjects, ref t);
 
@@ -30,6 +32,7 @@ namespace DemoGA
             return result;
         }
 
+        // Xếp lại các tiết cố định sau khi TKB được xáo trộn
         public static void AssignFixedLessons(List<SubjectInfo> subjects, ref Timetable timetable)
         {
             // Assign fixed subjects
@@ -145,6 +148,7 @@ namespace DemoGA
             return score;
         }
 
+        // Kiểm tra số lượng tiết / tuần của môn có đủ hay không
         private static void CheckLessonsPerWeekRule(ref int score, ref Timetable sample, List<SubjectInfo> subjects, List<MaximumLessons> trackingML)
         {
             for (int i = 0; i < subjects.Count; i++)
@@ -175,6 +179,7 @@ namespace DemoGA
             }
         }
 
+        // Chọn ra TKB có điểm cao nhất
         public static Timetable Selection(List<Timetable> inputSamples, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
         {
             for (int i = 0; i < inputSamples.Count; i++)
@@ -194,6 +199,7 @@ namespace DemoGA
             return temp[0];
         }
 
+        // Phối giống
         public static List<Timetable> Crossover(Timetable p1, Timetable p2, double crossRate)
         {
             Timetable c1 = new Timetable();
@@ -211,6 +217,7 @@ namespace DemoGA
                 {
                     for (int j = 0; j < p1.Lessons.GetLength(1); j++)
                     {
+                        // Nếu tiết đang xét là tiết cố định => gán cho TKB con tiết đó
                         if (p1.Lessons[i, j] != null && p1.Lessons[i, j].IsLock == 1)
                         {
                             c1.Lessons[i, j] = p1.Lessons[i, j];
@@ -239,6 +246,7 @@ namespace DemoGA
             return result;
         }
 
+        // Đột biến => swap tiết 2 ô với nhau, tỉ lệ đột biến nhỏ
         public static void Mutation(ref Timetable sample, double mutationRate)
         {
             for (int i = 1; i < sample.Lessons.Length; i++)
@@ -246,6 +254,7 @@ namespace DemoGA
                 Random rnd = new Random();
                 double rndDouble = rnd.NextDouble();
 
+                // Check xem random có nhỏ hơn tỉ lệ đột biến không, nếu nhỏ hơn => xảy ra đột biến
                 if (rndDouble < mutationRate)
                 {
                     for (int row = 0; row < sample.Lessons.GetLength(0); row++)
@@ -255,6 +264,7 @@ namespace DemoGA
                             var temp = sample.Lessons[row, col];
                             var prev = sample.Lessons[row, col - 1];
 
+                            // Nếu tiết đang xét là tiết cố định => skip
                             if ((temp != null && temp.IsLock == 1) || (prev != null && prev.IsLock == 1)) continue;
 
                             sample.Lessons[row, col] = prev;
@@ -268,9 +278,6 @@ namespace DemoGA
         public static void GeneticAlgorithm2(int n_iter, int n_pop, double r_cross, double r_mut, ref Timetable timeTable, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             // Get input sample list
-            int n_pop_loop = n_pop / 2;
-            if (n_pop_loop < 2) n_pop_loop = 2;
-
             int classId = timeTable.ClassInfo.Id;
             List<TeacherInfo> teachers = InitData.GetListTeacher();
             List<TeachingDistribution> teachingDistributions = InitData.GetTeachingDistributions();
@@ -283,12 +290,12 @@ namespace DemoGA
 
             for (int i = 0; i < n_pop; i++)
             {
-                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, teachers, subjects, td);
+                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, teachers, subjects, td, timeTable.Section);
 
                 sampleContainer.Add(new TimetableContainer(input));
             }
 
-            // Tracking best solution
+            // Giả sử TKB đầu tiên của container đầu tiên là tốt nhất => gán nó là best, tính điểm và gán điểm nó là bestScore
             Timetable best = sampleContainer[0].Timetables[0];
             int bestScore = EvaluationFitness(ref best, subjects, teacherAssignedLessons);
 
@@ -299,6 +306,7 @@ namespace DemoGA
                 Console.WriteLine("Start - Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
             }
 
+            // Nếu TKB đầu tiên có score = 0 => TKB tốt nhất => return
             if (bestScore == 0)
             {
                 timeTable = best;
@@ -312,10 +320,12 @@ namespace DemoGA
                 return;
             }
 
+            // Tạo danh sách TKB cha
             TimetableContainer selectedPopContainer = new TimetableContainer();
             // Enumerate generations
             for (int i = 0; i < n_pop; i++)
             {
+                // Lấy TKB tốt nhất trong từng container bỏ vào ds TKB cha
                 Timetable selectionList = Selection(sampleContainer[i].Timetables, subjects, teacherAssignedLessons);
 
                 selectedPopContainer.Timetables.Add(selectionList);
@@ -331,13 +341,13 @@ namespace DemoGA
                     Timetable p2 = selectedPopContainer.Timetables[i + 1];
 
                     // Crossover and mutation
-                    List<Timetable> c = Crossover(p1, p2, r_cross);
+                    List<Timetable> c = Crossover(p1, p2, r_cross); // Phối giống
 
                     for (int j = 0; j < c.Count; j++)
                     {
                         Timetable child = c[j];
 
-                        Mutation(ref child, r_mut);
+                        Mutation(ref child, r_mut); // Đột biến
 
                         children.Add(child);
                     }
@@ -346,7 +356,7 @@ namespace DemoGA
                 // Get result with best score
                 Timetable temp = Selection(children, subjects, teacherAssignedLessons);
 
-                //
+                // Chọn TKB có điểm thấp nhất trong danh sách TKB cha, thay thế = TKB con mới tìm được có điểm tốt hơn => cải thiện giống
                 var tempMin = selectedPopContainer.Timetables[0].Score;
                 int index = 0;
                 for (int t = 1; t < selectedPopContainer.Timetables.Count; t++)
@@ -363,25 +373,28 @@ namespace DemoGA
                     selectedPopContainer.Timetables[index] = temp;
                 }
 
-                if (temp.Score > bestScore) Console.WriteLine("Best score: {0}", bestScore);
+                if (temp.Score > bestScore) Console.WriteLine("Best score: {0}", bestScore); // Log tracking
 
+                // Nếu TKB bị lỗi -1 => Swap manual (chỉ với lỗi trùng tiết)
                 if (temp.Score == -1)
                 {
                     ManualSwap(ref temp, subjects, teacherAssignedLessons);
                 }
 
+                // Nếu TKB mới có điểm cao hơn TKB đầu vào => best = TKB mới
                 if (temp.Score > bestScore)
                 {
                     best = temp;
                     bestScore = temp.Score;
                 };
 
+                // Error tracking
                 for (int i = 0; i < temp.Err.Count; i++)
                 {
                     Console.WriteLine("Temp - Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
                 }
 
-                //if (bestScore < 0) n_i--;
+                //if (bestScore < 0) n_i--; // Nếu điểm chưa = 0 => lùi biến chạy để chạy tới khi nào tìm được 0 thì thôi, đã comment lại
                 if (bestScore == 0) break;
             }
 
@@ -395,10 +408,12 @@ namespace DemoGA
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss dd/MM/yyyy"));
             Console.WriteLine();
 
-            timeTable = best;
+            timeTable = best; // Gán best = TKB mới có số điểm tốt nhất
 
+            // Lấy danh sách các tiết được xếp cho giáo viên của TKB tốt nhất
             GetFinalTeacherAssignedLessons(timeTable, ref teacherAssignedLessons);
 
+            // Export excel để xem data
             var fileName = timeTable.ClassInfo.Name + "_" + timeTable.Section + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
 
             ExportExcel(best.Lessons, fileName);
@@ -510,6 +525,8 @@ namespace DemoGA
             teacherAssignedLessons = result;
         }
 
+        // Chỉ work khi TKB có score = -1 và lỗi là trùng tiết
+        // Chạy tuần tự từ đầu đến cuối TKB, Swap tiết lỗi với tiết mới => đánh điểm lại, nếu < 0 => trả lại tiết lỗi về vị trí cũ => chạy tiếp
         private static void ManualSwap(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
         {
             // Find error address

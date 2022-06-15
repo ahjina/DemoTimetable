@@ -24,10 +24,10 @@ Thứ 6   || Tiết 1 [10,0] || Tiết 2 [10,1] || Tiết 3 [10,2] || Tiết 4 [
 Thứ 7   || Tiết 1 [11,0] || Tiết 2 [11,1] || Tiết 3 [11,2] || Tiết 4 [11,3] || Tiết 5 [11,4]  
  */
 
-int n_iter = 2500;
-int n_pop = 500;
-double r_cross = 0.9;
-double r_mut = 0.05;
+int n_iter = 2500; // Số lần lặp để tìm ra TKB tốt nhất
+int n_pop = 500; // Số lượng Container (chứa TKB) và số lượng TKB trong 1 container => làm input đầu vào
+double r_cross = 0.9; // Tỉ lệ phối giống (crossover)
+double r_mut = 0.05; // Tỉ lệ đột biến (mutation)
 
 GradeInfo gradeInfo = new GradeInfo();
 
@@ -45,18 +45,20 @@ List<Timetable> listTimetable2 = new List<Timetable>();
 for (int i = 0; i < gradeInfo.Classes.Count; i++)
 {
     Console.OutputEncoding = Encoding.UTF8;
-    // MORNING
+    // MORNING - TKB buổi sáng
     Timetable timetable = new Timetable(gradeInfo.Classes[i]);
     timetable.Section = InitData.MORNING_SECTION;
 
     var tmp = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
 
+    // Gọi xử lý thuật toán
     Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref tmp);
 
     listTimetable.Add(timetable);
 
-    if (i == 0) teacherAssignedLessons = tmp;
-    else
+    // Sử dụng kết quả xếp tiết của TKB mới nhất để làm rule mới cho TKB sau
+    if (i == 0) teacherAssignedLessons = tmp; // nếu là TKB đầu tiên => lấy kết quả xếp tiết làm rule cho TKB sau
+    else // Ngược lại, merge kết quả xếp tiết hiện tại và kết quả xếp tiết của TKB mới nhất làm rule cho TKB kế tiếp
     {
         for (int j = 0; j < tmp.Count; j++)
         {
@@ -78,7 +80,7 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
         }
     }
 
-    // AFTERNOON
+    // AFTERNOON - TKB buổi chiều
     Timetable timetable2 = new Timetable(gradeInfo.Classes[i]);
     timetable2.Section = InitData.AFTERNOON_SECTION;
 
