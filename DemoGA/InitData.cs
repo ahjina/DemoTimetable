@@ -67,20 +67,20 @@ namespace DemoGA
             List<SubjectInfo> result = new List<SubjectInfo>();
 
             result.AddRange(new List<SubjectInfo> {
-                new SubjectInfo(1, "SHDC", 1, 1, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(2, "SHCN", 1, 1, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(3, "Sử", 2, 2, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(4, "Hóa", 3, 2, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(5, "Lý", 3, 2, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(6, "Văn", 5, 3, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(7, "Toán", 5, 3, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(8, "Anh", 2, 2, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(9, "Sinh", 2, 2, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(10, "Địa", 1, 1, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(11, "Tin", 1, 1, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(12, "GDCD", 1, 1, new List<string>(), PRIMARY_SECTION),
-                new SubjectInfo(13, "Thể dục", 2, 2, new List<string>(), SECONDARY_SECTION),
-                new SubjectInfo(14, "GDQP", 2, 2, new List<string>(), SECONDARY_SECTION),
+                new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION),
+                new SubjectInfo(2, "SHCN", 1, 1, PRIMARY_SECTION),
+                new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION),
+                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION, true),
+                new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION, true),
+                new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION, true),
+                new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION, true),
+                new SubjectInfo(8, "Anh", 2, 2, PRIMARY_SECTION),
+                new SubjectInfo(9, "Sinh", 2, 2, PRIMARY_SECTION),
+                new SubjectInfo(10, "Địa", 1, 1,  PRIMARY_SECTION),
+                new SubjectInfo(11, "Tin", 1, 1, PRIMARY_SECTION),
+                new SubjectInfo(12, "GDCD", 1, 1,  PRIMARY_SECTION),
+                new SubjectInfo(13, "Thể dục", 2, 2,  SECONDARY_SECTION, true),
+                new SubjectInfo(14, "GDQP", 2, 2,  SECONDARY_SECTION, true),
             }
             );
 

@@ -53,21 +53,34 @@ namespace DemoGA
         public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; } // Số tiết tối thiểu / buổi (chưa sử dụng)
         public string? SubjectDepartment { get; set; } // Môn học thuộc ban: Tự nhiên / Xã hội (chưa sử dụng)
         public string Section { get; set; } // Tiết này dạy buổi nào
+        public bool HasDoubleLessons { get; set; } // Môn có tiết đúp hay không (2 tiết liên tiếp)
 
         public SubjectInfo()
         {
             FixedLessons = new List<string>();
             MinimumLessonsPerSection = new List<LessonsPerSection>();
+            HasDoubleLessons = false;
         }
 
-        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, List<string>? fixedLessons, string section)
+        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section)
         {
             Id = id;
             Name = name;
             LessonsPerWeek = lessonsPerWeek;
             MaximumContinousLessons = maximumContinousLessons;
-            FixedLessons = fixedLessons;
             Section = section;
+            FixedLessons = new List<string>();
+        }
+
+        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section, bool hasDoubleLessons)
+        {
+            Id = id;
+            Name = name;
+            LessonsPerWeek = lessonsPerWeek;
+            MaximumContinousLessons = maximumContinousLessons;
+            Section = section;
+            HasDoubleLessons = hasDoubleLessons;
+            FixedLessons = new List<string>();
         }
     }
 
@@ -210,6 +223,7 @@ namespace DemoGA
         public int Score { get; set; } // 0 điểm là best
         public List<TrackingError> Err { get; set; } // Tracking lỗi nếu TKB không tính được 0 điểm
         public string Section { get; set; } // TKB thuộc buổi sáng / chiều
+        public List<AssignedDoubleLessonsInfo> ADL { get; set; }
 
         public Timetable()
         {
@@ -217,6 +231,7 @@ namespace DemoGA
             ClassInfo = new ClassInfo();
             Score = 0;
             Err = new List<TrackingError>();
+            ADL = new List<AssignedDoubleLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo)
@@ -225,6 +240,7 @@ namespace DemoGA
             ClassInfo = classInfo;
             Score = 0;
             Err = new List<TrackingError>();
+            ADL = new List<AssignedDoubleLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo, Lessons[,]? lessons, string section)
@@ -233,6 +249,7 @@ namespace DemoGA
             Lessons = lessons;
             Score = 0;
             Err = new List<TrackingError>();
+            ADL = new List<AssignedDoubleLessonsInfo>();
             Section = section;
         }
     }
@@ -276,6 +293,30 @@ namespace DemoGA
         public string Reason { get; set; } // Lý do lỗi
         public int ErrorType { get; set; } // Loại lỗi
 
-        public TrackingError() { }  
+        public TrackingError() { }
+    }
+
+    // Tracking tiết học đã xếp => đánh điểm tiết đúp
+    public class TrackingAssignedLessons
+    {
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
+        public int TotalLessons { get; set; }
+        public List<string> LessonsAddress { get; set; }
+
+        public TrackingAssignedLessons()
+        {
+            LessonsAddress = new List<string>();
+        }
+    }
+
+    public class AssignedDoubleLessonsInfo
+    {
+        public int SubjectId { get; set; }
+        public int CurrentPair { get; set; }
+        public int MaximumPair { get; set; }
+        public List<string> SingleAddress { get; set; } = new List<string>();
+
+        public AssignedDoubleLessonsInfo() { }
     }
 }

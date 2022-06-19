@@ -73,6 +73,7 @@ namespace DemoGA
             int score = 0;
 
             List<MaximumLessons> trackingML = new List<MaximumLessons>();
+            List<TrackingAssignedLessons> trackingAL = new List<TrackingAssignedLessons>();
             Lessons[,] lessons = sample.Lessons;
             int classId = sample.ClassInfo.Id;
             string section = sample.Section;
@@ -139,11 +140,32 @@ namespace DemoGA
                         trackingML.Add(new MaximumLessons(lessons[row, column].Subject.Id, 1));
                     else
                         trackingML[index].CurentLessons++;
+
+                    // Thêm địa chỉ tiết học để tracking tiết đúp
+                    if (lessons[row, column].Subject.HasDoubleLessons)
+                    {
+                        int index2 = trackingAL.FindIndex(x => x.SubjectId == currentLessonId);
+
+                        if (index < 0)
+                        {
+                            var tmpAL = new TrackingAssignedLessons();
+                            tmpAL.SubjectId = currentLessonId;
+                            tmpAL.SubjectName = lessons[row, column].Subject.Name;
+                            tmpAL.TotalLessons = lessons[row, column].Subject.LessonsPerWeek;
+                            tmpAL.LessonsAddress.Add(address);
+
+                            trackingAL.Add(tmpAL);
+                        }
+                        else trackingAL[index2].LessonsAddress.Add(address);
+                    }
                 }
             }
 
             // RULE 3. Lessons per week
             CheckLessonsPerWeekRule(ref score, ref sample, subjects, trackingML);
+
+            // RULE 4. Subject has double lessons
+            CheckDoubleLessonsRule(ref score, ref sample, trackingAL);
 
             return score;
         }
@@ -162,7 +184,7 @@ namespace DemoGA
                     var e = new TrackingError();
                     e.ClassName = sample.ClassInfo.Name;
                     e.ErrorType = 3;
-                    e.Reason = String.Format("Thiếu môn {0}", subjects[i].Id);
+                    e.Reason = String.Format("Thiếu môn {0}", subjects[i].Name);
 
                     sample.Err.Add(e);
                 }
@@ -172,7 +194,106 @@ namespace DemoGA
                     var e = new TrackingError();
                     e.ClassName = sample.ClassInfo.Name;
                     e.ErrorType = 4;
-                    e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", subjects[i].Id);
+                    e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", subjects[i].Name);
+
+                    sample.Err.Add(e);
+                }
+            }
+        }
+
+        // Kiểm tra số tiết đúp đã đúng hay chưa
+        private static void CheckDoubleLessonsRule(ref int score, ref Timetable sample, List<TrackingAssignedLessons> trackingAL)
+        {
+            for (int i = 0; i < trackingAL.Count; i++)
+            {
+                int maximumPair = trackingAL[i].TotalLessons / 2;
+                int singleLesson = trackingAL[i].TotalLessons % 2;
+                int currentPair = 0;
+
+                // Find assigned double lessons info
+                var index = sample.ADL.FindIndex(x => x.SubjectId == trackingAL[i].SubjectId);
+
+                var list = trackingAL[i].LessonsAddress.GroupBy(x => x.Substring(0, 1),
+                    (key, subList) => new
+                    {
+                        Key = key,
+                        SubList = subList.OrderBy(x => x).ToList()
+                    }).OrderBy(x => x.Key).ToList();
+
+                if (list.Count != maximumPair + singleLesson)
+                {
+                    score--;
+
+                    var e = new TrackingError();
+                    e.ClassName = sample.ClassInfo.Name;
+                    e.ErrorType = 5;
+                    e.Reason = String.Format("Không đúng số tiết đúp môn {0}, số ngày {1}", trackingAL[i].SubjectName, list.Count);
+
+                    sample.Err.Add(e);
+                }
+                else
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+
+                        if (list[j].SubList.Count > 1)
+                        {
+                            for (int k = 0; k < list[j].SubList.Count - 1;)
+                            {
+                                var col_1 = Convert.ToInt32(list[j].SubList[k].Split('_')[1]);
+                                var col_2 = Convert.ToInt32(list[j].SubList[k + 1].Split('_')[1]);
+
+                                if (col_1 == col_2 + 1 || col_2 == col_1 + 1)
+                                {
+                                    currentPair++;
+                                    k = k + 2;
+
+                                    if (index < 0)
+                                    {
+                                        AssignedDoubleLessonsInfo tmp = new AssignedDoubleLessonsInfo();
+                                        tmp.SubjectId = trackingAL[i].SubjectId;
+                                        tmp.CurrentPair = currentPair;
+                                        tmp.MaximumPair = maximumPair;
+
+                                        sample.ADL.Add(tmp);
+                                    }
+                                    else
+                                    {
+                                        sample.ADL[index].CurrentPair = currentPair;
+                                    }
+                                }
+                                else
+                                {
+                                    if (index < 0)
+                                    {
+                                        AssignedDoubleLessonsInfo tmp = new AssignedDoubleLessonsInfo();
+                                        tmp.SubjectId = trackingAL[i].SubjectId;
+                                        tmp.CurrentPair = currentPair;
+                                        tmp.MaximumPair = maximumPair;
+                                        tmp.SingleAddress.Add(list[j].SubList[k]);
+
+                                        sample.ADL.Add(tmp);
+                                    }
+                                    else
+                                    {
+                                        sample.ADL[index].SingleAddress.Add(list[j].SubList[k]);
+                                    }
+
+                                    k++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (currentPair != maximumPair)
+                {
+                    score--;
+
+                    var e = new TrackingError();
+                    e.ClassName = sample.ClassInfo.Name;
+                    e.ErrorType = 5;
+                    e.Reason = String.Format("Không đúng số tiết đúp môn {0}, cặp xếp được {1}", trackingAL[i].SubjectName, currentPair);
 
                     sample.Err.Add(e);
                 }
@@ -378,7 +499,7 @@ namespace DemoGA
                 // Nếu TKB bị lỗi -1 => Swap manual (chỉ với lỗi trùng tiết)
                 if (temp.Score == -1)
                 {
-                    ManualSwap(ref temp, subjects, teacherAssignedLessons);
+                    ManualSwapForDuplicateTeachingDistribution(ref temp, subjects, teacherAssignedLessons);
                 }
 
                 // Nếu TKB mới có điểm cao hơn TKB đầu vào => best = TKB mới
@@ -389,12 +510,16 @@ namespace DemoGA
                 };
 
                 // Error tracking
-                for (int i = 0; i < temp.Err.Count; i++)
-                {
-                    Console.WriteLine("Temp - Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
-                }
+                //for (int i = 0; i < temp.Err.Count; i++)
+                //{
+                //    Console.WriteLine("Temp - Lớp: {0}. Địa chỉ: {1}. Lỗi: {2}", best.Err[i].ClassName, best.Err[i].Address, best.Err[i].Reason);
+                //}
 
-                //if (bestScore < 0) n_i--; // Nếu điểm chưa = 0 => lùi biến chạy để chạy tới khi nào tìm được 0 thì thôi, đã comment lại
+                // Nếu điểm chưa = 0 => lùi biến chạy để chạy tới khi nào tìm được 0 thì thôi, đã comment lại
+                //if (bestScore < 0)
+                //{
+                //    //n_i--; 
+                //}
                 if (bestScore == 0) break;
             }
 
@@ -527,7 +652,7 @@ namespace DemoGA
 
         // Chỉ work khi TKB có score = -1 và lỗi là trùng tiết
         // Chạy tuần tự từ đầu đến cuối TKB, Swap tiết lỗi với tiết mới => đánh điểm lại, nếu < 0 => trả lại tiết lỗi về vị trí cũ => chạy tiếp
-        private static void ManualSwap(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
+        private static void ManualSwapForDuplicateTeachingDistribution(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
         {
             // Find error address
             var e = timetable.Err.Find(x => x.ErrorType == 1);
@@ -563,6 +688,93 @@ namespace DemoGA
                         {
                             timetable.Lessons[err_row, err_col] = timetable.Lessons[row, col];
                             timetable.Lessons[row, col] = t;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ManualSwapForNotEnoughDoubleLessons(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
+        {
+            var e = timetable.Err.Find(x => x.ErrorType == 5);
+            var sample = timetable;
+
+            if (e != null)
+            {
+                // Get list subject has no double lessons config
+                var listSingleLessonsSubject = subjects.Where(x => x.HasDoubleLessons == false && x.FixedLessons.Count == 0).Select(x => x.Id).ToList();
+
+                for (int i = 0; i < timetable.ADL.Count; i++)
+                {
+                    if (timetable.ADL[i].CurrentPair != timetable.ADL[i].MaximumPair)
+                    {
+                        for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+                        {
+                            if (timetable.Score == 0) break;
+
+                            for (int col = 0; col < timetable.Lessons.GetLength(1); col++)
+                            {
+                                if (sample.Lessons[row, col] != null && !listSingleLessonsSubject.Contains(sample.Lessons[row, col].Subject.Id)) continue;
+
+                                for (int j = 0; j < timetable.ADL[i].SingleAddress.Count; j++)
+                                {
+                                    var t_row = Convert.ToInt32(timetable.ADL[i].SingleAddress[j].Split('_')[0]);
+                                    var t_col = Convert.ToInt32(timetable.ADL[i].SingleAddress[j].Split('_')[1]);
+
+                                    if (row == t_row && col == t_col) continue;
+
+                                    var t = timetable.Lessons[row, col];
+
+                                    timetable.Lessons[row, col] = timetable.Lessons[t_row, t_col];
+                                    timetable.Lessons[t_row, t_col] = t;
+
+                                    // Evalutation Fitness again
+                                    int newScore = EvaluationFitness(ref timetable, subjects, teacherAssignedLessonsInfos);
+
+                                    if (newScore == 0)
+                                    {
+                                        timetable.Score = newScore;
+                                        timetable.Err = new List<TrackingError>();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        timetable.Lessons[t_row, t_col] = timetable.Lessons[row, col];
+                                        timetable.Lessons[row, col] = t;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> elements, int k)
+        {
+            return k == 0 ? new[] { new T[0] } :
+              elements.SelectMany((e, i) =>
+                elements.Skip(i + 1).Combinations(k - 1).Select(c => (new[] { e }).Concat(c)));
+        }
+
+        private static void ManualSwapForNotEnoughDoubleLessons2(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
+        {
+            var e = timetable.Err.Find(x => x.ErrorType == 5);
+            var sample = timetable;
+
+            if (e != null)
+            {
+                var ADL = timetable.ADL;
+
+                foreach (var adl in ADL)
+                {
+                    var remainPair = adl.MaximumPair - adl.CurrentPair;
+
+                    if (remainPair > 0)
+                    {
+                        for (int i = remainPair; i <= (adl.SingleAddress.Count - i) * 2; i++)
+                        {
+                            var combine = Combinations(adl.SingleAddress, i);
                         }
                     }
                 }

@@ -27,7 +27,7 @@ Thứ 7   || Tiết 1 [11,0] || Tiết 2 [11,1] || Tiết 3 [11,2] || Tiết 4 [
 int n_iter = 2500; // Số lần lặp để tìm ra TKB tốt nhất
 int n_pop = 500; // Số lượng Container (chứa TKB) và số lượng TKB trong 1 container => làm input đầu vào
 double r_cross = 0.9; // Tỉ lệ phối giống (crossover)
-double r_mut = 0.05; // Tỉ lệ đột biến (mutation)
+double r_mut = 0.1; // Tỉ lệ đột biến (mutation)
 
 GradeInfo gradeInfo = new GradeInfo();
 
