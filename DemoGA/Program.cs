@@ -29,91 +29,91 @@ int n_pop = 500; // Số lượng Container (chứa TKB) và số lượng TKB t
 double r_cross = 0.9; // Tỉ lệ phối giống (crossover)
 double r_mut = 0.1; // Tỉ lệ đột biến (mutation)
 
-//GradeInfo gradeInfo = new GradeInfo();
+GradeInfo gradeInfo = new GradeInfo();
 
-//gradeInfo.Id = 11;
-//gradeInfo.Name = "Khối 11";
+gradeInfo.Id = 11;
+gradeInfo.Name = "Khối 11";
 
-//List<TeacherInfo> teachers = InitData.GetListTeacher();
+List<TeacherInfo> teachers = InitData.GetListTeacher();
 
-//gradeInfo.Classes = InitData.GetListClass(teachers);
+gradeInfo.Classes = InitData.GetListClass(teachers);
 
-//List<TeacherAssignedLessonsInfo> teacherAssignedLessons = new List<TeacherAssignedLessonsInfo>();
-//List<Timetable> listTimetable = new List<Timetable>();
-//List<Timetable> listTimetable2 = new List<Timetable>();
+List<TeacherAssignedLessonsInfo> teacherAssignedLessons = new List<TeacherAssignedLessonsInfo>(); // Phân công giảng dạy
+List<Timetable> listTimetable = new List<Timetable>(); // Danh sách TKB buổi sáng
+List<Timetable> listTimetable2 = new List<Timetable>(); // Danh sách TKB buổi chiều
 
-//for (int i = 0; i < gradeInfo.Classes.Count; i++)
-//{
-//    Console.OutputEncoding = Encoding.UTF8;
-//    // MORNING - TKB buổi sáng
-//    Timetable timetable = new Timetable(gradeInfo.Classes[i]);
-//    timetable.Section = InitData.MORNING_SECTION;
+for (int i = 0; i < gradeInfo.Classes.Count; i++)
+{
+    Console.OutputEncoding = Encoding.UTF8;
+    // MORNING - TKB buổi sáng
+    Timetable timetable = new Timetable(gradeInfo.Classes[i]);
+    timetable.Section = InitData.MORNING_SECTION;
 
-//    var tmp = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
+    var tmp = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
 
-//    // Gọi xử lý thuật toán
-//    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref tmp);
+    // Gọi xử lý thuật toán
+    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable, ref tmp);
 
-//    listTimetable.Add(timetable);
+    listTimetable.Add(timetable);
 
-//    // Sử dụng kết quả xếp tiết của TKB mới nhất để làm rule mới cho TKB sau
-//    if (i == 0) teacherAssignedLessons = tmp; // nếu là TKB đầu tiên => lấy kết quả xếp tiết làm rule cho TKB sau
-//    else // Ngược lại, merge kết quả xếp tiết hiện tại và kết quả xếp tiết của TKB mới nhất làm rule cho TKB kế tiếp
-//    {
-//        for (int j = 0; j < tmp.Count; j++)
-//        {
-//            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
+    // Sử dụng kết quả xếp tiết của TKB mới nhất để làm rule mới cho TKB sau
+    if (i == 0) teacherAssignedLessons = tmp; // nếu là TKB đầu tiên => lấy kết quả xếp tiết làm rule cho TKB sau
+    else // Ngược lại, merge kết quả xếp tiết hiện tại và kết quả xếp tiết của TKB mới nhất làm rule cho TKB kế tiếp
+    {
+        for (int j = 0; j < tmp.Count; j++)
+        {
+            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
 
-//            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
-//            else
-//            {
-//                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
-//                {
-//                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.Address == tmp[j].AssignedLessonInfos[l].Address);
+            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
+            else
+            {
+                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
+                {
+                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.Address == tmp[j].AssignedLessonInfos[l].Address);
 
-//                    if (tmpTAL == null)
-//                    {
-//                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].Address, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
-//                    }
-//                }
-//            }
-//        }
-//    }
+                    if (tmpTAL == null)
+                    {
+                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].Address, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
+                    }
+                }
+            }
+        }
+    }
 
-//    // AFTERNOON - TKB buổi chiều
-//    Timetable timetable2 = new Timetable(gradeInfo.Classes[i]);
-//    timetable2.Section = InitData.AFTERNOON_SECTION;
+    // AFTERNOON - TKB buổi chiều
+    Timetable timetable2 = new Timetable(gradeInfo.Classes[i]);
+    timetable2.Section = InitData.AFTERNOON_SECTION;
 
-//    var tmp2 = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
+    var tmp2 = teacherAssignedLessons.ConvertAll(x => new TeacherAssignedLessonsInfo(x));
 
-//    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable2, ref tmp);
+    Functions.GeneticAlgorithm2(n_iter, n_pop, r_cross, r_mut, ref timetable2, ref tmp);
 
-//    listTimetable2.Add(timetable2);
+    listTimetable2.Add(timetable2);
 
-//    if (i == 0) teacherAssignedLessons = tmp;
-//    else
-//    {
-//        for (int j = 0; j < tmp.Count; j++)
-//        {
-//            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
+    if (i == 0) teacherAssignedLessons = tmp;
+    else
+    {
+        for (int j = 0; j < tmp.Count; j++)
+        {
+            var index = teacherAssignedLessons.FindIndex(x => x.TeacherId == tmp[j].TeacherId);
 
-//            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
-//            else
-//            {
-//                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
-//                {
-//                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.Address == tmp[j].AssignedLessonInfos[l].Address);
+            if (index < 0) teacherAssignedLessons.Add(tmp[j]);
+            else
+            {
+                for (int l = 0; l < tmp[j].AssignedLessonInfos.Count; l++)
+                {
+                    var tmpTAL = teacherAssignedLessons[index].AssignedLessonInfos.Find(x => x.Address == tmp[j].AssignedLessonInfos[l].Address);
 
-//                    if (tmpTAL == null)
-//                    {
-//                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].Address, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+                    if (tmpTAL == null)
+                    {
+                        teacherAssignedLessons[index].AssignedLessonInfos.Add(new AssignedLessonInfo(tmp[j].AssignedLessonInfos[l].Address, tmp[j].AssignedLessonInfos[l].ClassId, tmp[j].AssignedLessonInfos[l].ClassName, tmp[j].AssignedLessonInfos[l].Section));
+                    }
+                }
+            }
+        }
+    }
+}
 
-HandleDuplicateLessonsAssign.RunSample();
+//HandleDuplicateLessonsAssign.RunSample();
 
 Console.ReadLine();

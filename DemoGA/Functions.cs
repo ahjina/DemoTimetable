@@ -35,21 +35,21 @@ namespace DemoGA
         // Xếp lại các tiết cố định sau khi TKB được xáo trộn
         public static void AssignFixedLessons(List<SubjectInfo> subjects, ref Timetable timetable)
         {
-            // Assign fixed subjects
+            // Danh sách các môn có tiết cố định
             var subjectHFL = subjects.Where(x => x.FixedLessons.Count > 0).ToList();
 
             // Find assigned fixed subjects address in timetable
-            for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+            for (int row = 0; row < timetable.Lessons.GetLength(0); row++) // Loop thứ
             {
-                for (int column = 0; column < timetable.Lessons.GetLength(1); column++)
+                for (int column = 0; column < timetable.Lessons.GetLength(1); column++) // Loop tiết
                 {
-                    var currentLesson = timetable.Lessons[row, column];
+                    var currentLesson = timetable.Lessons[row, column]; // Lấy tiết hiện tại ở địa chỉ [row, column]
 
                     if (currentLesson == null) continue;
 
-                    foreach (var s in subjectHFL)
+                    foreach (var s in subjectHFL) // Loop qua danh sách các môn có tiết cố định
                     {
-                        if (currentLesson.Subject.Id == s.Id)
+                        if (currentLesson.Subject.Id == s.Id) // Nếu môn của tiết hiện tại = môn của tiết cố định 
                         {
                             foreach (var address in s.FixedLessons)
                             {
@@ -70,8 +70,8 @@ namespace DemoGA
             int score = 0;
 
             List<MaximumLessons> trackingML = new List<MaximumLessons>();
-            List<TrackingAssignedLessons> trackingAL = new List<TrackingAssignedLessons>();
-            Lessons[,] lessons = sample.Lessons;
+            List<TrackingAssignedLessons> trackingAL = new List<TrackingAssignedLessons>(); // Kiểm tra những tiết đã xếp cho giáo viên 
+            Lessons[,] lessons = sample.Lessons; // Danh sách các tiết
             int classId = sample.ClassInfo.Id;
             string section = sample.Section;
 
@@ -87,12 +87,14 @@ namespace DemoGA
                     if (lessons[row, column] == null) continue;
 
                     // RULE 1. Not duplicate lessons same teacher
-                    var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
+                    var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id); // Lấy thông tin giáo viên giảng dạy môn của tiết hiện tại
 
                     if (td != null)
                     {
-                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != classId && x.Section == section);
+                        // Phân công giảng dạy của giáo viên
+                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != classId && x.Section == section); 
 
+                        // Tiết đã bị xếp cho lớp khác và không phải là tiết cố định || SHCN - GVCN
                         if (info != null && lessons[row, column].IsLock == 0)
                         {
                             score--;
@@ -128,7 +130,7 @@ namespace DemoGA
                         sample.Err.Add(e);
                     }
 
-                    // Count number of lesson
+                    // Count number of lesson => Tracking số lượng tiết: đủ tiết 1 tuần hay không
                     int index = trackingML.FindIndex(x => x.SubjectId == currentLessonId);
 
                     if (index < 0)
@@ -325,7 +327,7 @@ namespace DemoGA
 
             // Check for recombination
             Random rnd = new Random();
-            if (rnd.NextDouble() < crossRate)
+            if (rnd.NextDouble() < crossRate) // rnd.NextDouble(): random từ 0.0 => < 1.0 || crossRate: tỉ lệ phối giống
             {
                 int pt = rnd.Next(1, p1.Lessons.Length - 2);
 
@@ -391,6 +393,7 @@ namespace DemoGA
             }
         }
 
+        // Chaạy theo từng lớp
         public static void GeneticAlgorithm2(int n_iter, int n_pop, double r_cross, double r_mut, ref Timetable timeTable, ref List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             // Get input sample list
@@ -399,8 +402,9 @@ namespace DemoGA
             List<TeachingDistribution> teachingDistributions = InitData.GetTeachingDistributions();
             List<TeachingDistribution> td = teachingDistributions.Where(x => x.ClassessId.Any(y => y == classId)).ToList();
 
+            // Kiểm tra xem TKB hiện tại là buổi chính khóa / trái buổi
             string kindOfSection = timeTable.Section == timeTable.ClassInfo.MainSection ? InitData.PRIMARY_SECTION : InitData.SECONDARY_SECTION;
-            List<SubjectInfo> subjects = timeTable.ClassInfo.Subjects.Where(x => x.Section == kindOfSection).ToList();
+            List<SubjectInfo> subjects = timeTable.ClassInfo.Subjects.Where(x => x.Section == kindOfSection).ToList(); // Lấy danh sách môn theo buổi
 
             List<TimetableContainer> sampleContainer = new List<TimetableContainer>();
 
@@ -427,7 +431,7 @@ namespace DemoGA
             {
                 timeTable = best;
 
-                GetFinalTeacherAssignedLessons(timeTable, ref teacherAssignedLessons);
+                GetFinalTeacherAssignedLessons(timeTable, ref teacherAssignedLessons); // => Lấy danh sách tiết đã xếp của giáo viên (TKB tốt nhất)
 
                 var file = timeTable.ClassInfo.Name + "_" + timeTable.Section + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx";
 

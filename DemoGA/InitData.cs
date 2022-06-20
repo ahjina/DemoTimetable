@@ -67,10 +67,10 @@ namespace DemoGA
             List<SubjectInfo> result = new List<SubjectInfo>();
 
             result.AddRange(new List<SubjectInfo> {
-                new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION),
+                new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi
                 new SubjectInfo(2, "SHCN", 1, 1, PRIMARY_SECTION),
                 new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION),
-                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION, true),
+                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION, true), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi, Có tiết đúp hay không
                 new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION, true),
                 new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION, true),
                 new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION, true),
@@ -87,13 +87,13 @@ namespace DemoGA
             // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
             if (section == MORNING_SECTION)
             {
-                result[0].FixedLessons.Add(new LessonAddress(0, 0));
-                result[1].FixedLessons.Add(new LessonAddress(0, 1));
+                result[0].FixedLessons.Add(new LessonAddress(0, 0)); // tiết 1 thứ 2
+                result[1].FixedLessons.Add(new LessonAddress(0, 1)); // tiết 2 thứ 2
             }
             else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
             {
-                result[0].FixedLessons.Add(new LessonAddress(4, 4));
-                result[1].FixedLessons.Add(new LessonAddress(4, 3));
+                result[0].FixedLessons.Add(new LessonAddress(4, 4)); // tiết 5 thứ 6
+                result[1].FixedLessons.Add(new LessonAddress(4, 3)); // tiết 4 thứ 6
             }
 
             return result;
@@ -326,10 +326,10 @@ namespace DemoGA
             TeachingDistribution td = new TeachingDistribution();
             List<int> classesId = new List<int>();
 
-            // Teacher 1
+            // Teacher 1 - Ban giám hiệu => môn SHDC 
             td.TeacherId = 1;
             td.SubjectId = new List<int>();
-            td.SubjectId.AddRange(new List<int> { 1, 2 });
+            td.SubjectId.AddRange(new List<int> { 1, 2 }); // SHDC - SHCN
             classesId.AddRange(new List<int>
             {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
@@ -337,7 +337,7 @@ namespace DemoGA
             td.ClassessId = classesId;
             result.Add(td);
 
-            // Teacher 2
+            // Teacher 2 
             td = new TeachingDistribution();
             td.TeacherId = 2;
 
@@ -772,14 +772,14 @@ namespace DemoGA
         // Xáo trộn các tiết trong 1 TKB => làm đầu vào để chạy thuật toán
         public static T[,] Shuffle<T>(Random random, T[,] array)
         {
-            int lengthRow = array.GetLength(1);
+            int lengthRow = array.GetLength(1); // Số lượng phần tử của chiều thứ 2 (tiết) [6, 5] => getlength(0) => 6; getlength(1) => 5
 
-            for (int i = array.Length - 1; i > 0; i--)
+            for (int i = array.Length - 1; i > 0; i--) // array.Length => 6 x 5 = 30
             {
                 int i0 = i / lengthRow;
                 int i1 = i % lengthRow;
 
-                int j = random.Next(i + 1);
+                int j = random.Next(i + 1); // Số random
                 int j0 = j / lengthRow;
                 int j1 = j % lengthRow;
 
