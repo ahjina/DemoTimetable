@@ -87,13 +87,13 @@ namespace DemoGA
             // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
             if (section == MORNING_SECTION)
             {
-                result[0].FixedLessons.Add("0_0");
-                result[1].FixedLessons.Add("0_1");
+                result[0].FixedLessons.Add(new LessonAddress(0, 0));
+                result[1].FixedLessons.Add(new LessonAddress(0, 1));
             }
             else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
             {
-                result[0].FixedLessons.Add("4_4");
-                result[1].FixedLessons.Add("4_3");
+                result[0].FixedLessons.Add(new LessonAddress(4, 4));
+                result[1].FixedLessons.Add(new LessonAddress(4, 3));
             }
 
             return result;
@@ -293,8 +293,6 @@ namespace DemoGA
                     {
                         for (int j = 0; j < subjects[i].LessonsPerWeek; j++)
                         {
-                            string address = row.ToString() + "_" + column.ToString();
-
                             if (column == LESSONSPERSECTION)
                             {
                                 row++;
@@ -305,7 +303,8 @@ namespace DemoGA
                             lessons.Subject = subjects[i];
                             lessons.Teacher = teacher;
 
-                            if (subjects[i].FixedLessons.Contains(address)) lessons.IsLock = 1;
+                            var fi = subjects[i].FixedLessons.FindIndex(x => x.row == row && x.col == column);
+                            if (fi > -1) lessons.IsLock = 1;
 
                             result[row, column] = lessons;
                             column++;

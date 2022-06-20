@@ -49,17 +49,17 @@ namespace DemoGA
         public string? Name { get; set; }
         public int LessonsPerWeek { get; set; } // Số tiết học / tuần
         public int MaximumContinousLessons { get; set; } // Số tiết tối đa liên tiếp
-        public List<string>? FixedLessons { get; set; } // List địa chỉ tiết được đánh cố định
+        public List<LessonAddress>? FixedLessons { get; set; } // List địa chỉ tiết được đánh cố định
         public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; } // Số tiết tối thiểu / buổi (chưa sử dụng)
         public string? SubjectDepartment { get; set; } // Môn học thuộc ban: Tự nhiên / Xã hội (chưa sử dụng)
         public string Section { get; set; } // Tiết này dạy buổi nào
-        public bool HasDoubleLessons { get; set; } // Môn có tiết đúp hay không (2 tiết liên tiếp)
+        public bool HasDuplicateLessons { get; set; } // Môn có tiết đúp hay không (2 tiết liên tiếp)
 
         public SubjectInfo()
         {
-            FixedLessons = new List<string>();
+            FixedLessons = new List<LessonAddress>();
             MinimumLessonsPerSection = new List<LessonsPerSection>();
-            HasDoubleLessons = false;
+            HasDuplicateLessons = false;
         }
 
         public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section)
@@ -69,7 +69,7 @@ namespace DemoGA
             LessonsPerWeek = lessonsPerWeek;
             MaximumContinousLessons = maximumContinousLessons;
             Section = section;
-            FixedLessons = new List<string>();
+            FixedLessons = new List<LessonAddress>();
         }
 
         public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section, bool hasDoubleLessons)
@@ -79,8 +79,8 @@ namespace DemoGA
             LessonsPerWeek = lessonsPerWeek;
             MaximumContinousLessons = maximumContinousLessons;
             Section = section;
-            HasDoubleLessons = hasDoubleLessons;
-            FixedLessons = new List<string>();
+            HasDuplicateLessons = hasDoubleLessons;
+            FixedLessons = new List<LessonAddress>();
         }
     }
 
@@ -107,13 +107,13 @@ namespace DemoGA
         public int Id { get; set; }
         public string Name { get; set; }
         public string MainSection { get; set; } // Chính khóa của lớp: buổi sáng / buổi chiều
-        public List<string>? OffLessons { get; set; } // List địa chỉ tiết được đánh nghỉ (chưa sử dụng)
+        public List<LessonAddress>? OffLessons { get; set; } // List địa chỉ tiết được đánh nghỉ (chưa sử dụng)
         public List<SubjectInfo> Subjects { get; set; }
         public TeacherInfo HeadTeacher { get; set; } // GVCN
 
         public ClassInfo()
         {
-            OffLessons = new List<string>();
+            OffLessons = new List<LessonAddress>();
             Subjects = new List<SubjectInfo>();
             HeadTeacher = new TeacherInfo();
         }
@@ -163,16 +163,16 @@ namespace DemoGA
 
     public class AssignedLessonInfo
     {
-        public string LessonAddress { get; set; } // Địa chỉ của tiết (mảng 2 chiều, lưu kiểu row_column, vd: 2_0)
+        public LessonAddress Address { get; set; } // Địa chỉ của tiết (mảng 2 chiều)
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public string Section { get; set; } // Tiết được xếp thuộc buổi nào
 
         public AssignedLessonInfo() { }
 
-        public AssignedLessonInfo(string lessonAddress, int classId, string className, string section)
+        public AssignedLessonInfo(LessonAddress lessonAddress, int classId, string className, string section)
         {
-            LessonAddress = lessonAddress;
+            Address = lessonAddress;
             ClassId = classId;
             ClassName = className;
             Section = section;
@@ -213,6 +213,23 @@ namespace DemoGA
             Teacher = new TeacherInfo();
             IsLock = 0;
         }
+
+        // Use for create sample test
+        public Lessons(int id, SubjectInfo subject)
+        {
+            Id = id;
+            Subject = subject;
+            Teacher = new TeacherInfo();
+            IsLock = 0;
+        }
+        // Use for create sample test
+        public Lessons(int id, SubjectInfo subject, int isLock)
+        {
+            Id = id;
+            Subject = subject;
+            Teacher = new TeacherInfo();
+            IsLock = isLock;
+        }   
     }
 
     // Thời khóa biểu
@@ -223,7 +240,7 @@ namespace DemoGA
         public int Score { get; set; } // 0 điểm là best
         public List<TrackingError> Err { get; set; } // Tracking lỗi nếu TKB không tính được 0 điểm
         public string Section { get; set; } // TKB thuộc buổi sáng / chiều
-        public List<AssignedDoubleLessonsInfo> ADL { get; set; }
+        public List<AssignedDuplicateLessonsInfo> ADL { get; set; }
 
         public Timetable()
         {
@@ -231,7 +248,7 @@ namespace DemoGA
             ClassInfo = new ClassInfo();
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDoubleLessonsInfo>();
+            ADL = new List<AssignedDuplicateLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo)
@@ -240,7 +257,7 @@ namespace DemoGA
             ClassInfo = classInfo;
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDoubleLessonsInfo>();
+            ADL = new List<AssignedDuplicateLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo, Lessons[,]? lessons, string section)
@@ -249,7 +266,7 @@ namespace DemoGA
             Lessons = lessons;
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDoubleLessonsInfo>();
+            ADL = new List<AssignedDuplicateLessonsInfo>();
             Section = section;
         }
     }
@@ -274,14 +291,14 @@ namespace DemoGA
     public class MaximumLessons
     {
         public int SubjectId { get; set; }
-        public int CurentLessons { get; set; }
+        public int CurentLessonsCount { get; set; }
 
         public MaximumLessons() { }
 
         public MaximumLessons(int subjectId, int curentContinousLessons)
         {
             SubjectId = subjectId;
-            CurentLessons = curentContinousLessons;
+            CurentLessonsCount = curentContinousLessons;
         }
     }
 
@@ -289,7 +306,7 @@ namespace DemoGA
     public class TrackingError
     {
         public string ClassName { get; set; }
-        public string Address { get; set; } // Địa chỉ của tiết bị lỗi, vd: 0_2
+        public LessonAddress Address { get; set; } // Địa chỉ của tiết bị lỗi
         public string Reason { get; set; } // Lý do lỗi
         public int ErrorType { get; set; } // Loại lỗi
 
@@ -302,21 +319,49 @@ namespace DemoGA
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
         public int TotalLessons { get; set; }
-        public List<string> LessonsAddress { get; set; }
+        public List<LessonAddress> LessonsAddress { get; set; }
 
         public TrackingAssignedLessons()
         {
-            LessonsAddress = new List<string>();
+            LessonsAddress = new List<LessonAddress>();
         }
     }
 
-    public class AssignedDoubleLessonsInfo
+    public class AssignedDuplicateLessonsInfo
     {
         public int SubjectId { get; set; }
         public int CurrentPair { get; set; }
         public int MaximumPair { get; set; }
-        public List<string> SingleAddress { get; set; } = new List<string>();
+        public List<LessonAddress> SingleAddress { get; set; } = new List<LessonAddress>();
 
-        public AssignedDoubleLessonsInfo() { }
+        public AssignedDuplicateLessonsInfo() {
+            SingleAddress = new List<LessonAddress>();
+        }
+    }
+
+    public class LessonAddress
+    {
+        public int row { get; set; }
+        public int col { get; set; }
+        
+        public LessonAddress(int r, int c)
+        {
+            row = r;
+            col = c;
+        }
+    }
+
+    public class ReferenceLessons
+    {
+        public LessonAddress Address { get; set; }
+        public LessonAddress? RefAddress { get; set; }
+        public int SubjectId { get; set; }
+
+        public ReferenceLessons(LessonAddress address, LessonAddress refAddress, int subjectId)
+        {
+            Address = address;
+            RefAddress = refAddress;
+            SubjectId = subjectId;
+        }
     }
 }

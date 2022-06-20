@@ -53,14 +53,11 @@ namespace DemoGA
                         {
                             foreach (var address in s.FixedLessons)
                             {
-                                var r = Convert.ToInt32(address.Split('_')[0]);
-                                var c = Convert.ToInt32(address.Split('_')[1]);
-
                                 var tmpLesson = new Lessons();
                                 tmpLesson = currentLesson;
 
-                                timetable.Lessons[row, column] = timetable.Lessons[r, c];
-                                timetable.Lessons[r, c] = tmpLesson;
+                                timetable.Lessons[row, column] = timetable.Lessons[address.row, address.col];
+                                timetable.Lessons[address.row, address.col] = tmpLesson;
                             }
                         }
                     }
@@ -89,21 +86,19 @@ namespace DemoGA
                 {
                     if (lessons[row, column] == null) continue;
 
-                    string address = row.ToString() + "_" + column.ToString();
-
                     // RULE 1. Not duplicate lessons same teacher
                     var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
 
                     if (td != null)
                     {
-                        var info = td.AssignedLessonInfos.Find(x => x.LessonAddress == address && x.ClassId != classId && x.Section == section);
+                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != classId && x.Section == section);
 
                         if (info != null && lessons[row, column].IsLock == 0)
                         {
                             score--;
                             var e = new TrackingError();
                             e.ClassName = sample.ClassInfo.Name;
-                            e.Address = address;
+                            e.Address = new LessonAddress(row, column);
                             e.ErrorType = 1;
                             e.Reason = String.Format("Trùng tiết của gv {0} môn {1} lớp {2} buổi {3}", lessons[row, column].Teacher.Name, lessons[row, column].Subject.Name, info.ClassName, section);
 
@@ -126,7 +121,7 @@ namespace DemoGA
                         score--;
                         var e = new TrackingError();
                         e.ClassName = sample.ClassInfo.Name;
-                        e.Address = address;
+                        e.Address = new LessonAddress(row, column);
                         e.ErrorType = 2;
                         e.Reason = String.Format("Vượt quá số tiết liên tiếp môn {0}. Tổng số tiết {1}", lessons[row, column].Subject.Name, currentLessonCount);
 
@@ -139,10 +134,10 @@ namespace DemoGA
                     if (index < 0)
                         trackingML.Add(new MaximumLessons(lessons[row, column].Subject.Id, 1));
                     else
-                        trackingML[index].CurentLessons++;
+                        trackingML[index].CurentLessonsCount++;
 
                     // Thêm địa chỉ tiết học để tracking tiết đúp
-                    if (lessons[row, column].Subject.HasDoubleLessons)
+                    if (lessons[row, column].Subject.HasDuplicateLessons)
                     {
                         int index2 = trackingAL.FindIndex(x => x.SubjectId == currentLessonId);
 
@@ -152,11 +147,11 @@ namespace DemoGA
                             tmpAL.SubjectId = currentLessonId;
                             tmpAL.SubjectName = lessons[row, column].Subject.Name;
                             tmpAL.TotalLessons = lessons[row, column].Subject.LessonsPerWeek;
-                            tmpAL.LessonsAddress.Add(address);
+                            tmpAL.LessonsAddress.Add(new LessonAddress(row, column));
 
                             trackingAL.Add(tmpAL);
                         }
-                        else trackingAL[index2].LessonsAddress.Add(address);
+                        else trackingAL[index2].LessonsAddress.Add(new LessonAddress(row, column));
                     }
                 }
             }
@@ -164,8 +159,8 @@ namespace DemoGA
             // RULE 3. Lessons per week
             CheckLessonsPerWeekRule(ref score, ref sample, subjects, trackingML);
 
-            // RULE 4. Subject has double lessons
-            CheckDoubleLessonsRule(ref score, ref sample, trackingAL);
+            // RULE 4. Subject has duplicate lessons
+            //CheckDoubleLessonsRule(ref score, ref sample, trackingAL);
 
             return score;
         }
@@ -188,7 +183,7 @@ namespace DemoGA
 
                     sample.Err.Add(e);
                 }
-                else if (tmp.CurentLessons != subjects[i].LessonsPerWeek)
+                else if (tmp.CurentLessonsCount != subjects[i].LessonsPerWeek)
                 {
                     score--;
                     var e = new TrackingError();
@@ -213,7 +208,7 @@ namespace DemoGA
                 // Find assigned double lessons info
                 var index = sample.ADL.FindIndex(x => x.SubjectId == trackingAL[i].SubjectId);
 
-                var list = trackingAL[i].LessonsAddress.GroupBy(x => x.Substring(0, 1),
+                var list = trackingAL[i].LessonsAddress.GroupBy(x => x.row,
                     (key, subList) => new
                     {
                         Key = key,
@@ -240,8 +235,8 @@ namespace DemoGA
                         {
                             for (int k = 0; k < list[j].SubList.Count - 1;)
                             {
-                                var col_1 = Convert.ToInt32(list[j].SubList[k].Split('_')[1]);
-                                var col_2 = Convert.ToInt32(list[j].SubList[k + 1].Split('_')[1]);
+                                var col_1 = list[j].SubList[k].col;
+                                var col_2 = list[j].SubList[k + 1].col;
 
                                 if (col_1 == col_2 + 1 || col_2 == col_1 + 1)
                                 {
@@ -250,7 +245,7 @@ namespace DemoGA
 
                                     if (index < 0)
                                     {
-                                        AssignedDoubleLessonsInfo tmp = new AssignedDoubleLessonsInfo();
+                                        AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
                                         tmp.SubjectId = trackingAL[i].SubjectId;
                                         tmp.CurrentPair = currentPair;
                                         tmp.MaximumPair = maximumPair;
@@ -266,7 +261,7 @@ namespace DemoGA
                                 {
                                     if (index < 0)
                                     {
-                                        AssignedDoubleLessonsInfo tmp = new AssignedDoubleLessonsInfo();
+                                        AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
                                         tmp.SubjectId = trackingAL[i].SubjectId;
                                         tmp.CurrentPair = currentPair;
                                         tmp.MaximumPair = maximumPair;
@@ -544,7 +539,7 @@ namespace DemoGA
             ExportExcel(best.Lessons, fileName);
         }
 
-        private static void ExportExcel(Lessons[,] temp, string fileName)
+        public static void ExportExcel(Lessons[,] temp, string fileName)
         {
             XLWorkbook workbook = new XLWorkbook();
             DataTable dt = new DataTable() { TableName = "New Worksheet" };
@@ -601,7 +596,7 @@ namespace DemoGA
             workbook.Worksheets.Add(ds);
 
             //save
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string desktopPath = @"C:\Users\Kuro\Desktop\timetable";
             string savePath = Path.Combine(desktopPath, fileName);
             workbook.SaveAs(savePath, false);
         }
@@ -621,8 +616,6 @@ namespace DemoGA
                 {
                     if (lessons[row, column] == null) continue;
 
-                    string address = row.ToString() + "_" + column.ToString();
-
                     // RULE 1. Not duplicate lessons same teacher
                     var td = result.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
 
@@ -631,17 +624,17 @@ namespace DemoGA
                         TeacherAssignedLessonsInfo tmpTd = new TeacherAssignedLessonsInfo();
                         tmpTd.TeacherId = lessons[row, column].Teacher.Id;
                         tmpTd.AssignedLessonInfos = new List<AssignedLessonInfo>();
-                        tmpTd.AssignedLessonInfos.Add(new AssignedLessonInfo(address, sample.ClassInfo.Id, sample.ClassInfo.Name, sample.Section));
+                        tmpTd.AssignedLessonInfos.Add(new AssignedLessonInfo(new LessonAddress(row, column), sample.ClassInfo.Id, sample.ClassInfo.Name, sample.Section));
 
                         result.Add(tmpTd);
                     }
                     else
                     {
-                        var info = td.AssignedLessonInfos.Find(x => x.LessonAddress == address && x.ClassId != sample.ClassInfo.Id);
+                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != sample.ClassInfo.Id);
 
                         if (info == null)
                         {
-                            td.AssignedLessonInfos.Add(new AssignedLessonInfo(address, sample.ClassInfo.Id, sample.ClassInfo.Name, sample.Section));
+                            td.AssignedLessonInfos.Add(new AssignedLessonInfo(new LessonAddress(row, column), sample.ClassInfo.Id, sample.ClassInfo.Name, sample.Section));
                         }
                     }
                 }
@@ -659,8 +652,8 @@ namespace DemoGA
 
             if (e != null)
             {
-                var err_row = Convert.ToInt32(e.Address.Split('_')[0]);
-                var err_col = Convert.ToInt32(e.Address.Split('_')[1]);
+                var err_row = e.Address.row;
+                var err_col = e.Address.col;
 
                 for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
                 {
@@ -694,91 +687,6 @@ namespace DemoGA
             }
         }
 
-        private static void ManualSwapForNotEnoughDoubleLessons(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
-        {
-            var e = timetable.Err.Find(x => x.ErrorType == 5);
-            var sample = timetable;
-
-            if (e != null)
-            {
-                // Get list subject has no double lessons config
-                var listSingleLessonsSubject = subjects.Where(x => x.HasDoubleLessons == false && x.FixedLessons.Count == 0).Select(x => x.Id).ToList();
-
-                for (int i = 0; i < timetable.ADL.Count; i++)
-                {
-                    if (timetable.ADL[i].CurrentPair != timetable.ADL[i].MaximumPair)
-                    {
-                        for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
-                        {
-                            if (timetable.Score == 0) break;
-
-                            for (int col = 0; col < timetable.Lessons.GetLength(1); col++)
-                            {
-                                if (sample.Lessons[row, col] != null && !listSingleLessonsSubject.Contains(sample.Lessons[row, col].Subject.Id)) continue;
-
-                                for (int j = 0; j < timetable.ADL[i].SingleAddress.Count; j++)
-                                {
-                                    var t_row = Convert.ToInt32(timetable.ADL[i].SingleAddress[j].Split('_')[0]);
-                                    var t_col = Convert.ToInt32(timetable.ADL[i].SingleAddress[j].Split('_')[1]);
-
-                                    if (row == t_row && col == t_col) continue;
-
-                                    var t = timetable.Lessons[row, col];
-
-                                    timetable.Lessons[row, col] = timetable.Lessons[t_row, t_col];
-                                    timetable.Lessons[t_row, t_col] = t;
-
-                                    // Evalutation Fitness again
-                                    int newScore = EvaluationFitness(ref timetable, subjects, teacherAssignedLessonsInfos);
-
-                                    if (newScore == 0)
-                                    {
-                                        timetable.Score = newScore;
-                                        timetable.Err = new List<TrackingError>();
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        timetable.Lessons[t_row, t_col] = timetable.Lessons[row, col];
-                                        timetable.Lessons[row, col] = t;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> elements, int k)
-        {
-            return k == 0 ? new[] { new T[0] } :
-              elements.SelectMany((e, i) =>
-                elements.Skip(i + 1).Combinations(k - 1).Select(c => (new[] { e }).Concat(c)));
-        }
-
-        private static void ManualSwapForNotEnoughDoubleLessons2(ref Timetable timetable, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessonsInfos)
-        {
-            var e = timetable.Err.Find(x => x.ErrorType == 5);
-            var sample = timetable;
-
-            if (e != null)
-            {
-                var ADL = timetable.ADL;
-
-                foreach (var adl in ADL)
-                {
-                    var remainPair = adl.MaximumPair - adl.CurrentPair;
-
-                    if (remainPair > 0)
-                    {
-                        for (int i = remainPair; i <= (adl.SingleAddress.Count - i) * 2; i++)
-                        {
-                            var combine = Combinations(adl.SingleAddress, i);
-                        }
-                    }
-                }
-            }
-        }
+        
     }
 }
