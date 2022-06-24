@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DemoGA
 {
+    [Serializable]
     public class TeacherInfo
     {
         public int Id { get; set; }
@@ -29,6 +30,7 @@ namespace DemoGA
     }
 
     // Số tiết tối đa / buổi
+    [Serializable]
     public class LessonsPerSection
     {
         public string Section { get; set; }
@@ -43,6 +45,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class SubjectInfo
     {
         public int Id { get; set; }
@@ -84,6 +87,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class ClassSubjectInfo
     {
         public SubjectInfo SubjectInfo { get; set; }
@@ -102,6 +106,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class ClassInfo
     {
         public int Id { get; set; }
@@ -119,6 +124,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class GradeInfo
     {
         public int Id { get; set; }
@@ -138,6 +144,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class TeacherAssignedLessonsInfo
     {
         public int TeacherId { get; set; }
@@ -161,6 +168,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class AssignedLessonInfo
     {
         public LessonAddress Address { get; set; } // Địa chỉ của tiết (mảng 2 chiều)
@@ -180,6 +188,7 @@ namespace DemoGA
     }
 
     // Phân công giảng dạy
+    [Serializable]
     public class TeachingDistribution
     {
         public int TeacherId { get; set; }
@@ -200,6 +209,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class Lessons
     {
         public int Id { get; set; }
@@ -233,6 +243,7 @@ namespace DemoGA
     }
 
     // Thời khóa biểu
+    [Serializable]
     public class Timetable
     {
         public ClassInfo? ClassInfo { get; set; }
@@ -272,6 +283,7 @@ namespace DemoGA
     }
 
     // 1 Container chứa danh sách các TKB => dùng để tạo nhiều sample TKB đầu vào để chạy thuật toán
+    [Serializable]
     public class TimetableContainer
     {
         public List<Timetable> Timetables { get; set; }
@@ -288,6 +300,7 @@ namespace DemoGA
     }
 
     // Dùng để check xem số tiết tối đa được xếp TKB có bằng số tiết tối đa / tuần của môn học hay không
+    [Serializable]
     public class MaximumLessons
     {
         public int SubjectId { get; set; }
@@ -303,6 +316,7 @@ namespace DemoGA
     }
 
     // Tracking lỗi
+    [Serializable]
     public class TrackingError
     {
         public string ClassName { get; set; }
@@ -314,6 +328,7 @@ namespace DemoGA
     }
 
     // Tracking tiết học đã xếp => đánh điểm tiết đúp
+    [Serializable]
     public class TrackingAssignedLessons
     {
         public int SubjectId { get; set; }
@@ -327,6 +342,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class AssignedDuplicateLessonsInfo
     {
         public int SubjectId { get; set; }
@@ -339,6 +355,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class LessonAddress
     {
         public int row { get; set; }
@@ -351,6 +368,7 @@ namespace DemoGA
         }
     }
 
+    [Serializable]
     public class ReferenceLessons
     {
         public LessonAddress Address { get; set; }
