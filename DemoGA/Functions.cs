@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 using System.Data;
+using System.IO;
 
 namespace DemoGA
 {
@@ -600,7 +601,7 @@ namespace DemoGA
             workbook.Worksheets.Add(ds);
 
             //save
-            string desktopPath = @"C:\Users\Kuro\Desktop\timetable";
+            string desktopPath = @"C:\Users\User\Desktop\timetable"; //  C:\Users\Kuro\Desktop\timetable
             string savePath = Path.Combine(desktopPath, fileName);
             workbook.SaveAs(savePath, false);
         }

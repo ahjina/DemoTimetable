@@ -65,36 +65,57 @@ namespace DemoGA
         public static List<SubjectInfo> GetListSubject(string section)
         {
             List<SubjectInfo> result = new List<SubjectInfo>();
+            
+            // SHDC
+            SubjectInfo subject = new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION);
+            // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
+            if (section == MORNING_SECTION)
+            {
+                subject.FixedLessons.Add(new LessonAddress(0, 0)); // tiết 1 thứ 2
+                subject.FixedLessons.Add(new LessonAddress(0, 1)); // tiết 2 thứ 2
+            }
+            else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
+            {
+                subject.FixedLessons.Add(new LessonAddress(4, 4)); // tiết 5 thứ 6
+                subject.FixedLessons.Add(new LessonAddress(4, 3)); // tiết 4 thứ 6
+            }
+            result.Add(subject);
+            
+            //! SHCN
+            subject = new SubjectInfo(2, "SHDC", 1, 1, PRIMARY_SECTION);
+            result.Add(subject);
+            
+            //! Sử
+            subject = new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 2)
+            });
+            subject.Detail.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 1)
+            });
+            result.Add(subject);
+            
+            
 
             result.AddRange(new List<SubjectInfo> {
                 new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi
                 new SubjectInfo(2, "SHCN", 1, 1, PRIMARY_SECTION),
                 new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION),
-                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION, true), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi, Có tiết đúp hay không
-                new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION, true),
-                new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION, true),
-                new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION, true),
+                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi, Có tiết đúp hay không
+                new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION),
+                new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION),
+                new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION),
                 new SubjectInfo(8, "Anh", 2, 2, PRIMARY_SECTION),
                 new SubjectInfo(9, "Sinh", 2, 2, PRIMARY_SECTION),
                 new SubjectInfo(10, "Địa", 1, 1,  PRIMARY_SECTION),
                 new SubjectInfo(11, "Tin", 1, 1, PRIMARY_SECTION),
                 new SubjectInfo(12, "GDCD", 1, 1,  PRIMARY_SECTION),
-                new SubjectInfo(13, "Thể dục", 2, 2,  SECONDARY_SECTION, true),
-                new SubjectInfo(14, "GDQP", 2, 2,  SECONDARY_SECTION, true),
+                new SubjectInfo(13, "Thể dục", 2, 2,  SECONDARY_SECTION),
+                new SubjectInfo(14, "GDQP", 2, 2,  SECONDARY_SECTION),
             }
             );
-
-            // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
-            if (section == MORNING_SECTION)
-            {
-                result[0].FixedLessons.Add(new LessonAddress(0, 0)); // tiết 1 thứ 2
-                result[1].FixedLessons.Add(new LessonAddress(0, 1)); // tiết 2 thứ 2
-            }
-            else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
-            {
-                result[0].FixedLessons.Add(new LessonAddress(4, 4)); // tiết 5 thứ 6
-                result[1].FixedLessons.Add(new LessonAddress(4, 3)); // tiết 4 thứ 6
-            }
 
             return result;
         }

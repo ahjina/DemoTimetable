@@ -34,7 +34,9 @@ namespace DemoGA
         public string Section { get; set; }
         public int NumOfLessons { get; set; }
 
-        public LessonsPerSection() { }
+        public LessonsPerSection()
+        {
+        }
 
         public LessonsPerSection(string section, int numOfLessons)
         {
@@ -50,16 +52,16 @@ namespace DemoGA
         public int LessonsPerWeek { get; set; } // Số tiết học / tuần
         public int MaximumContinousLessons { get; set; } // Số tiết tối đa liên tiếp
         public List<LessonAddress>? FixedLessons { get; set; } // List địa chỉ tiết được đánh cố định
-        public List<LessonsPerSection>? MinimumLessonsPerSection { get; set; } // Số tiết tối thiểu / buổi (chưa sử dụng)
+        public List<LessonsPerSection> LessonsPerSections { get; set; }
         public string? SubjectDepartment { get; set; } // Môn học thuộc ban: Tự nhiên / Xã hội (chưa sử dụng)
         public string Section { get; set; } // Tiết này dạy buổi nào
-        public bool HasDuplicateLessons { get; set; } // Môn có tiết đúp hay không (2 tiết liên tiếp)
+        public List<LessonsPerSectionDetail> Detail { get; set; }
 
         public SubjectInfo()
         {
             FixedLessons = new List<LessonAddress>();
-            MinimumLessonsPerSection = new List<LessonsPerSection>();
-            HasDuplicateLessons = false;
+            LessonsPerSections = new List<LessonsPerSection>();
+            Detail = new List<LessonsPerSectionDetail>();
         }
 
         public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section)
@@ -70,17 +72,8 @@ namespace DemoGA
             MaximumContinousLessons = maximumContinousLessons;
             Section = section;
             FixedLessons = new List<LessonAddress>();
-        }
-
-        public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section, bool hasDoubleLessons)
-        {
-            Id = id;
-            Name = name;
-            LessonsPerWeek = lessonsPerWeek;
-            MaximumContinousLessons = maximumContinousLessons;
-            Section = section;
-            HasDuplicateLessons = hasDoubleLessons;
-            FixedLessons = new List<LessonAddress>();
+            LessonsPerSections = new List<LessonsPerSection>();
+            Detail = new List<LessonsPerSectionDetail>();
         }
     }
 
@@ -107,15 +100,15 @@ namespace DemoGA
         public int Id { get; set; }
         public string Name { get; set; }
         public string MainSection { get; set; } // Chính khóa của lớp: buổi sáng / buổi chiều
-        public List<LessonAddress>? OffLessons { get; set; } // List địa chỉ tiết được đánh nghỉ (chưa sử dụng)
         public List<SubjectInfo> Subjects { get; set; }
         public TeacherInfo HeadTeacher { get; set; } // GVCN
+        public List<SectionDetailInfo> SectionDetailInfos { get; set; }
 
         public ClassInfo()
         {
-            OffLessons = new List<LessonAddress>();
             Subjects = new List<SubjectInfo>();
             HeadTeacher = new TeacherInfo();
+            SectionDetailInfos = new List<SectionDetailInfo>();
         }
     }
 
@@ -363,5 +356,43 @@ namespace DemoGA
             RefAddress = refAddress;
             SubjectId = subjectId;
         }
+    }
+
+    public class SectionDetailInfo
+    {
+        public string Section { get; set; }
+        public int DayOfWeek { get; set; }
+        public int NumOfLessons { get; set; }
+        public List<LessonAddress> OffLessons { get; set; }
+
+        public SectionDetailInfo()
+        {
+            OffLessons = new List<LessonAddress>();
+        }
+    }
+
+    public class LessonsPerSectionDetail
+    {
+        public int NumOfContinousLessons { get; set; }
+        public int NumOfSections { get; set; }
+        
+        public LessonsPerSectionDetail() {}
+
+        public LessonsPerSectionDetail(int numOfContinousLessons, int numOfSections)
+        {
+            NumOfContinousLessons = numOfContinousLessons;
+            NumOfSections = numOfSections;
+        }
+    }
+
+    enum CustomDayOfWeek
+    {
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+        SUNDAY
     }
 }
