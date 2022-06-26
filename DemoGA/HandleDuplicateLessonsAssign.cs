@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DemoGA
 {
+    [Serializable]
     public static class HandleDuplicateLessonsAssign
     {
         private static void MiniSwap(ref Lessons a, ref Lessons b)
@@ -81,7 +84,7 @@ namespace DemoGA
                         else
                         {
                             // Check if address is exists
-                            var ti = result[index2].LessonsAddress.Find(x => x.row == row && x.col == column);
+                            var ti = trackingAssignedSingleLessons[index2].LessonsAddress.Find(x => x.row == row && x.col == column);
 
                             if (ti == null)
                                 trackingAssignedSingleLessons[index2].LessonsAddress.Add(new LessonAddress(row, column));
@@ -250,9 +253,9 @@ namespace DemoGA
             return result;
         }
 
-        public static void AssignDuplicateLessons(Timetable timetable, List<AssignedDuplicateLessonsInfo> listADL, List<ReferenceLessons> listRL, List<LessonAddress> trackingASL)
+        public static void AssignDuplicateLessons(ref Timetable timetable, List<AssignedDuplicateLessonsInfo> listADL, List<ReferenceLessons> listRL, List<LessonAddress> trackingASL)
         {
-            var newTimetable = timetable;
+            var newTimetable = timetable.DeepClone();
             foreach (var adl in listADL)
             {
                 int A = adl.MaximumPair - adl.CurrentPair;
@@ -281,7 +284,6 @@ namespace DemoGA
 
                             if (i > 1) t = _fC.Concat(trackingASL).DistinctBy(x => x.row + "|" + x.col).ToList();
 
-
                             if (t.Count < E[j].ToList().Count) continue;
 
                             var F = Combinations(t, E[j].ToList().Count).ToList();
@@ -296,26 +298,27 @@ namespace DemoGA
                                     MiniSwap(ref newTimetable.Lessons[E1.row, E1.col], ref newTimetable.Lessons[tmp[q].row, tmp[q].col]);
                                 }
                                 // Evaluation
+                                var score = CustomEvaluationFitness(newTimetable);
+                                timetable.Score = score;
 
-                                // Export excel 
-                                var fileName = string.Format("timetable_{0}_{1}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmssfff"), i);
 
-                                Functions.ExportExcel(timetable.Lessons, fileName);
 
-                                newTimetable = timetable;
+                                if (score == 0) {
+                                return;
+                                }
+
+                                newTimetable = timetable.DeepClone();
                             }
                         }
                     }
                 }
             }
-
-            Console.WriteLine("== end ==");
         }
 
-        public static void RunSample()
+        public static void RunSample(ref Timetable sample)
         {
-            Timetable sample = new Timetable();
-            sample.Lessons = GetSampleLessons();
+            //Timetable sample = new Timetable();
+            //sample.Lessons = GetSampleLessons();
 
             List<TrackingAssignedLessons> trackingASL = new List<TrackingAssignedLessons>();
             List<SubjectInfo> subjects = InitData.GetListSubject(InitData.MORNING_SECTION);
@@ -325,7 +328,7 @@ namespace DemoGA
 
             var assignedSingleLessons = trackingASL.SelectMany(x => x.LessonsAddress).ToList();
 
-            AssignDuplicateLessons(sample, listADL, listRL, assignedSingleLessons);
+            AssignDuplicateLessons(ref sample, listADL, listRL, assignedSingleLessons);
         }
 
         private static Lessons[,] GetSampleLessons()
@@ -343,6 +346,105 @@ namespace DemoGA
             };
 
             return result;
+        }
+
+        public static int CustomEvaluationFitness(Timetable timetable)
+        {
+            int score = timetable.Score;
+            Lessons[,] lessons = timetable.Lessons;
+            List<AssignedDuplicateLessonsInfo> listTracking = new List<AssignedDuplicateLessonsInfo>();
+
+            LessonAddress currAddress = new LessonAddress(-1, -1);
+            int currSubjectId = 0;
+
+            // Tính toán dữ liệu
+            for (int row = 0; row < lessons.GetLength(0); row++)
+            {
+                int currentLessonCount = 0;
+
+                for (int col = 0; col < lessons.GetLength(1); col++)
+                {
+                    if (lessons[row, col] != null)
+                    {
+                        if (lessons[row, col].IsLock == 0)
+                        {
+                            if (lessons[row, col].Subject.HasDuplicateLessons)
+                            {
+                                var index = listTracking.FindIndex(x => x.SubjectId == lessons[row, col].Subject.Id);
+
+                                if (index < 0)
+                                {
+                                    currAddress.row = row;
+                                    currAddress.col = col;
+
+                                    var tmp = new AssignedDuplicateLessonsInfo();
+                                    tmp.SubjectId = lessons[row, col].Subject.Id;
+                                    tmp.MaximumPair = lessons[row, col].Subject.LessonsPerWeek / 2;
+                                    tmp.CurrentPair = 0;
+                                    tmp.SingleAddress.Add(currAddress);
+
+                                    listTracking.Add(tmp);
+                                }
+                                else
+                                {
+                                    if (currSubjectId == lessons[row, col].Subject.Id) // Tiết trước đó là môn của tiết đang xét
+                                    {
+                                        currentLessonCount++;
+                                        listTracking[index].SingleAddress.Add(new LessonAddress(row, col));
+
+                                        if (currAddress.row == row && currentLessonCount < 3) listTracking[index].CurrentPair++;
+                                    }
+                                    else
+                                    {
+                                        currentLessonCount = 1;
+                                    }
+                                }
+
+                                currAddress.row = row;
+                                currAddress.col = col;
+                            }
+                        }
+
+                        currSubjectId = lessons[row, col].Subject.Id;
+                    }
+                    else
+                    {
+                        currSubjectId = 0;
+                        currAddress.row = row;
+                        currAddress.col = col;
+                        currentLessonCount = 0;
+                    }
+                }
+            }
+
+            // Đánh điểm
+            foreach (var item in listTracking)
+            {
+                if (item.CurrentPair != item.MaximumPair)
+                {
+                    score--;
+
+                    var e = new TrackingError();
+                    e.ErrorType = 6;
+                    e.Reason = String.Format("Môn {0} không đủ số tiết đúp. Số tiết xếp được: {1}", item.SubjectId, item.CurrentPair);
+
+                    timetable.Err.Add(e);
+                }
+            }
+
+            return score;
+        }
+
+        // Deep clone
+        public static T DeepClone<T>(this T a)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, a);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            }
         }
     }
 }

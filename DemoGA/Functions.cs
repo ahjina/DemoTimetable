@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 using System.Data;
-using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace DemoGA
 {
@@ -138,32 +138,18 @@ namespace DemoGA
                         trackingML.Add(new MaximumLessons(lessons[row, column].Subject.Id, 1));
                     else
                         trackingML[index].CurentLessonsCount++;
-
-                    // Thêm địa chỉ tiết học để tracking tiết đúp
-                    if (lessons[row, column].Subject.HasDuplicateLessons)
-                    {
-                        int index2 = trackingAL.FindIndex(x => x.SubjectId == currentLessonId);
-
-                        if (index < 0)
-                        {
-                            var tmpAL = new TrackingAssignedLessons();
-                            tmpAL.SubjectId = currentLessonId;
-                            tmpAL.SubjectName = lessons[row, column].Subject.Name;
-                            tmpAL.TotalLessons = lessons[row, column].Subject.LessonsPerWeek;
-                            tmpAL.LessonsAddress.Add(new LessonAddress(row, column));
-
-                            trackingAL.Add(tmpAL);
-                        }
-                        else trackingAL[index2].LessonsAddress.Add(new LessonAddress(row, column));
-                    }
                 }
             }
 
             // RULE 3. Lessons per week
             CheckLessonsPerWeekRule(ref score, ref sample, subjects, trackingML);
 
+            sample.Score = score;
+
             // RULE 4. Subject has duplicate lessons
-            //CheckDoubleLessonsRule(ref score, ref sample, trackingAL);
+            HandleDuplicateLessonsAssign.RunSample(ref sample);
+
+            score = sample.Score;
 
             return score;
         }
@@ -193,105 +179,6 @@ namespace DemoGA
                     e.ClassName = sample.ClassInfo.Name;
                     e.ErrorType = 4;
                     e.Reason = String.Format("Không đủ số tiết 1 tuần môn {0}", subjects[i].Name);
-
-                    sample.Err.Add(e);
-                }
-            }
-        }
-
-        // Kiểm tra số tiết đúp đã đúng hay chưa
-        private static void CheckDoubleLessonsRule(ref int score, ref Timetable sample, List<TrackingAssignedLessons> trackingAL)
-        {
-            for (int i = 0; i < trackingAL.Count; i++)
-            {
-                int maximumPair = trackingAL[i].TotalLessons / 2;
-                int singleLesson = trackingAL[i].TotalLessons % 2;
-                int currentPair = 0;
-
-                // Find assigned double lessons info
-                var index = sample.ADL.FindIndex(x => x.SubjectId == trackingAL[i].SubjectId);
-
-                var list = trackingAL[i].LessonsAddress.GroupBy(x => x.row,
-                    (key, subList) => new
-                    {
-                        Key = key,
-                        SubList = subList.OrderBy(x => x).ToList()
-                    }).OrderBy(x => x.Key).ToList();
-
-                if (list.Count != maximumPair + singleLesson)
-                {
-                    score--;
-
-                    var e = new TrackingError();
-                    e.ClassName = sample.ClassInfo.Name;
-                    e.ErrorType = 5;
-                    e.Reason = String.Format("Không đúng số tiết đúp môn {0}, số ngày {1}", trackingAL[i].SubjectName, list.Count);
-
-                    sample.Err.Add(e);
-                }
-                else
-                {
-                    for (int j = 0; j < list.Count; j++)
-                    {
-
-                        if (list[j].SubList.Count > 1)
-                        {
-                            for (int k = 0; k < list[j].SubList.Count - 1;)
-                            {
-                                var col_1 = list[j].SubList[k].col;
-                                var col_2 = list[j].SubList[k + 1].col;
-
-                                if (col_1 == col_2 + 1 || col_2 == col_1 + 1)
-                                {
-                                    currentPair++;
-                                    k = k + 2;
-
-                                    if (index < 0)
-                                    {
-                                        AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
-                                        tmp.SubjectId = trackingAL[i].SubjectId;
-                                        tmp.CurrentPair = currentPair;
-                                        tmp.MaximumPair = maximumPair;
-
-                                        sample.ADL.Add(tmp);
-                                    }
-                                    else
-                                    {
-                                        sample.ADL[index].CurrentPair = currentPair;
-                                    }
-                                }
-                                else
-                                {
-                                    if (index < 0)
-                                    {
-                                        AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
-                                        tmp.SubjectId = trackingAL[i].SubjectId;
-                                        tmp.CurrentPair = currentPair;
-                                        tmp.MaximumPair = maximumPair;
-                                        tmp.SingleAddress.Add(list[j].SubList[k]);
-
-                                        sample.ADL.Add(tmp);
-                                    }
-                                    else
-                                    {
-                                        sample.ADL[index].SingleAddress.Add(list[j].SubList[k]);
-                                    }
-
-                                    k++;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (currentPair != maximumPair)
-                {
-                    score--;
-
-                    var e = new TrackingError();
-                    e.ClassName = sample.ClassInfo.Name;
-                    e.ErrorType = 5;
-                    e.Reason = String.Format("Không đúng số tiết đúp môn {0}, cặp xếp được {1}", trackingAL[i].SubjectName, currentPair);
 
                     sample.Err.Add(e);
                 }
@@ -601,7 +488,7 @@ namespace DemoGA
             workbook.Worksheets.Add(ds);
 
             //save
-            string desktopPath = @"C:\Users\User\Desktop\timetable"; //  C:\Users\Kuro\Desktop\timetable
+            string desktopPath = @"C:\Users\Kuro\Desktop\timetable";
             string savePath = Path.Combine(desktopPath, fileName);
             workbook.SaveAs(savePath, false);
         }
@@ -691,7 +578,5 @@ namespace DemoGA
                 }
             }
         }
-
-        
     }
 }

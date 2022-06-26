@@ -117,6 +117,4 @@ for (int i = 0; i < gradeInfo.Classes.Count; i++)
     }
 }
 
-//HandleDuplicateLessonsAssign.RunSample();
-
 Console.ReadLine();
