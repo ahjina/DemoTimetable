@@ -11,12 +11,12 @@ namespace DemoGA
 {
     public static class Functions
     {
-        // Tạo TKB
+        //! 1. Tạo TKB
         public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<SubjectInfo> subjects, List<TeachingDistribution> teachingDistributions, string section)
         {
             List<Timetable> result = new List<Timetable>();
 
-            // Get samples
+            //! Get samples
             Lessons[,] lessons = InitData.GetInputLessons(subjects, teachers, teachingDistributions);
 
             for (int i = 0; i < n_pop; i++)
@@ -26,6 +26,7 @@ namespace DemoGA
                 t.Section = section;
 
                 AssignFixedLessons(subjects, ref t);
+                AssignOffLessons(classInfo.SectionDetailInfos, ref t);
 
                 result.Add(t);
             }
@@ -33,7 +34,7 @@ namespace DemoGA
             return result;
         }
 
-        // Xếp lại các tiết cố định sau khi TKB được xáo trộn
+        //! 2. Xếp lại các tiết cố định sau khi TKB được xáo trộn
         public static void AssignFixedLessons(List<SubjectInfo> subjects, ref Timetable timetable)
         {
             // Danh sách các môn có tiết cố định
@@ -66,6 +67,54 @@ namespace DemoGA
             }
         }
 
+        //! 3.1 Lấy danh sách địa chỉ các tiết trống
+        private static List<LessonAddress> GetBlankLessonsAddress(Lessons[,] lessons)
+        {
+            List<LessonAddress> result = new List<LessonAddress>();
+
+            for (int row = 0; row < lessons.GetLength(0); row++)
+            {
+                for (int column = 0; column < lessons.GetLength(1); column++)
+                {
+                    if (lessons[row, column] == null) result.Add(new LessonAddress(row, column));
+                }
+            }
+
+            return result;
+        }
+
+        //! 3.2 Xếp lại các tiết trống sau khi xếp các tiết cố định
+        public static void AssignOffLessons(List<SectionDetailInfo> classSectionDetailInfo, ref Timetable timetable)
+        {
+            //todo Lấy danh sách tiết trống hiện tại của TKB
+            var blankLessons = GetBlankLessonsAddress(timetable.Lessons);
+            var index = 0;
+
+            //todo Lấy danh sách ngày có tiết trống của buổi hiện tại
+            var section = timetable.Section;
+            var detail = classSectionDetailInfo.Where(x => x.Section == section).ToList();
+
+            for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+            {
+                //todo Tìm trong danh sách xem ngày hiện tại có tiết trống hay không
+                var sectionHasLessonsOff = detail.Where(x => x.DayOfWeek == row).FirstOrDefault();
+
+                if (sectionHasLessonsOff != null && sectionHasLessonsOff.OffLessons.Count > 0)
+                {
+                    for (int i = 0; i < sectionHasLessonsOff.OffLessons.Count; i++)
+                    {
+                        var offLesson = sectionHasLessonsOff.OffLessons[i];
+                        var tmp = timetable.Lessons[offLesson.row, offLesson.col];
+
+                        timetable.Lessons[offLesson.row, offLesson.col] = timetable.Lessons[blankLessons[index].row, blankLessons[index].col];
+                        timetable.Lessons[blankLessons[index].row, blankLessons[index].col] = tmp;
+
+                        index++;
+                    }
+                }
+            }
+        }
+
         public static int EvaluationFitness(ref Timetable sample, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             int score = 0;
@@ -93,7 +142,7 @@ namespace DemoGA
                     if (td != null)
                     {
                         // Phân công giảng dạy của giáo viên
-                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != classId && x.Section == section); 
+                        var info = td.AssignedLessonInfos.Find(x => x.Address.row == row && x.Address.col == column && x.ClassId != classId && x.Section == section);
 
                         // Tiết đã bị xếp cho lớp khác và không phải là tiết cố định || SHCN - GVCN
                         if (info != null && lessons[row, column].IsLock == 0)
@@ -144,12 +193,12 @@ namespace DemoGA
             // RULE 3. Lessons per week
             CheckLessonsPerWeekRule(ref score, ref sample, subjects, trackingML);
 
-            sample.Score = score;
+            //sample.Score = score;
 
-            // RULE 4. Subject has duplicate lessons
-            HandleDuplicateLessonsAssign.RunSample(ref sample);
+            //// RULE 4. Subject has duplicate lessons
+            //HandleDuplicateLessonsAssign.RunSample(ref sample);
 
-            score = sample.Score;
+            //score = sample.Score;
 
             return score;
         }
@@ -228,6 +277,14 @@ namespace DemoGA
                         {
                             c1.Lessons[i, j] = p1.Lessons[i, j];
                             c2.Lessons[i, j] = p2.Lessons[i, j];
+                            continue;
+                        }
+
+                        //! Hiện tại null là tiết trống đã được sắp xếp => không đổi
+                        if (p1.Lessons[i, j] == null)
+                        {
+                            c1.Lessons[i, j] = null;
+                            c2.Lessons[i, j] = null;
                             continue;
                         }
 

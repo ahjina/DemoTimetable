@@ -58,13 +58,13 @@ namespace DemoGA
         public List<LessonsPerSection> LessonsPerSections { get; set; }
         public string? SubjectDepartment { get; set; } // Môn học thuộc ban: Tự nhiên / Xã hội (chưa sử dụng)
         public string Section { get; set; } // Tiết này dạy buổi nào
-        public List<LessonsPerSectionDetail> Detail { get; set; }
+        public List<LessonsPerSectionDetail> LessonsPerSectionDetails { get; set; }
 
         public SubjectInfo()
         {
             FixedLessons = new List<LessonAddress>();
             LessonsPerSections = new List<LessonsPerSection>();
-            Detail = new List<LessonsPerSectionDetail>();
+            LessonsPerSectionDetails = new List<LessonsPerSectionDetail>();
         }
 
         public SubjectInfo(int id, string? name, int lessonsPerWeek, int maximumContinousLessons, string section)
@@ -76,7 +76,7 @@ namespace DemoGA
             Section = section;
             FixedLessons = new List<LessonAddress>();
             LessonsPerSections = new List<LessonsPerSection>();
-            Detail = new List<LessonsPerSectionDetail>();
+            LessonsPerSectionDetails = new List<LessonsPerSectionDetail>();
         }
     }
 
@@ -380,12 +380,20 @@ namespace DemoGA
     {
         public string Section { get; set; }
         public int DayOfWeek { get; set; }
-        public int NumOfLessons { get; set; }
+        public int NumOfStudyLessons { get; set; }
         public List<LessonAddress> OffLessons { get; set; }
 
         public SectionDetailInfo()
         {
             OffLessons = new List<LessonAddress>();
+        }
+
+        public SectionDetailInfo(string section, int dayOfWeek, int numOfStudyLessons, List<LessonAddress> offLessons)
+        {
+            Section = section;
+            DayOfWeek = dayOfWeek;
+            NumOfStudyLessons = numOfStudyLessons;
+            OffLessons = offLessons;
         }
     }
 

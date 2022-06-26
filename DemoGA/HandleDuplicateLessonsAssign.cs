@@ -28,71 +28,71 @@ namespace DemoGA
         {
             List<TrackingAssignedLessons> result = new List<TrackingAssignedLessons>();
 
-            for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
-            {
-                for (int column = 0; column < timetable.Lessons.GetLength(1); column++)
-                {
-                    var lesson = timetable.Lessons[row, column];
+            //for (int row = 0; row < timetable.Lessons.GetLength(0); row++)
+            //{
+            //    for (int column = 0; column < timetable.Lessons.GetLength(1); column++)
+            //    {
+            //        var lesson = timetable.Lessons[row, column];
 
-                    if (lesson != null && lesson.Subject.HasDuplicateLessons)
-                    {
-                        // Find tracking info
-                        var index = result.FindIndex(x => x.SubjectId == lesson.Subject.Id);
+            //        if (lesson != null && lesson.Subject.HasDuplicateLessons)
+            //        {
+            //            // Find tracking info
+            //            var index = result.FindIndex(x => x.SubjectId == lesson.Subject.Id);
 
-                        if (index < 0)
-                        {
-                            TrackingAssignedLessons tmp = new TrackingAssignedLessons();
-                            tmp.SubjectId = lesson.Subject.Id;
-                            tmp.SubjectName = lesson.Subject.Name;
-                            tmp.TotalLessons = lesson.Subject.LessonsPerWeek;
+            //            if (index < 0)
+            //            {
+            //                TrackingAssignedLessons tmp = new TrackingAssignedLessons();
+            //                tmp.SubjectId = lesson.Subject.Id;
+            //                tmp.SubjectName = lesson.Subject.Name;
+            //                tmp.TotalLessons = lesson.Subject.LessonsPerWeek;
 
-                            // Check if address is exists
-                            var ti = tmp.LessonsAddress.Find(x => x.row == row && x.col == column);
+            //                // Check if address is exists
+            //                var ti = tmp.LessonsAddress.Find(x => x.row == row && x.col == column);
 
-                            if (ti == null)
-                                tmp.LessonsAddress.Add(new LessonAddress(row, column));
+            //                if (ti == null)
+            //                    tmp.LessonsAddress.Add(new LessonAddress(row, column));
 
-                            result.Add(tmp);
-                        }
-                        else
-                        {
-                            // Check if address is exists
-                            var ti = result[index].LessonsAddress.Find(x => x.row == row && x.col == column);
+            //                result.Add(tmp);
+            //            }
+            //            else
+            //            {
+            //                // Check if address is exists
+            //                var ti = result[index].LessonsAddress.Find(x => x.row == row && x.col == column);
 
-                            if (ti == null)
-                                result[index].LessonsAddress.Add(new LessonAddress(row, column));
-                        }
-                    }
-                    else if (lesson != null && lesson.IsLock == 0)
-                    {
-                        var index2 = trackingAssignedSingleLessons.FindIndex(x => x.SubjectId == lesson.Subject.Id);
+            //                if (ti == null)
+            //                    result[index].LessonsAddress.Add(new LessonAddress(row, column));
+            //            }
+            //        }
+            //        else if (lesson != null && lesson.IsLock == 0)
+            //        {
+            //            var index2 = trackingAssignedSingleLessons.FindIndex(x => x.SubjectId == lesson.Subject.Id);
 
-                        if (index2 < 0)
-                        {
-                            TrackingAssignedLessons tmp = new TrackingAssignedLessons();
-                            tmp.SubjectId = lesson.Subject.Id;
-                            tmp.SubjectName = lesson.Subject.Name;
+            //            if (index2 < 0)
+            //            {
+            //                TrackingAssignedLessons tmp = new TrackingAssignedLessons();
+            //                tmp.SubjectId = lesson.Subject.Id;
+            //                tmp.SubjectName = lesson.Subject.Name;
 
-                            // Check if address is exists
-                            var ti = tmp.LessonsAddress.Find(x => x.row == row && x.col == column);
+            //                // Check if address is exists
+            //                var ti = tmp.LessonsAddress.Find(x => x.row == row && x.col == column);
 
-                            if (ti == null)
-                                tmp.LessonsAddress.Add(new LessonAddress(row, column));
+            //                if (ti == null)
+            //                    tmp.LessonsAddress.Add(new LessonAddress(row, column));
 
-                            trackingAssignedSingleLessons.Add(tmp);
-                        }
-                        else
-                        {
-                            // Check if address is exists
-                            var ti = trackingAssignedSingleLessons[index2].LessonsAddress.Find(x => x.row == row && x.col == column);
+            //                trackingAssignedSingleLessons.Add(tmp);
+            //            }
+            //            else
+            //            {
+            //                // Check if address is exists
+            //                var ti = trackingAssignedSingleLessons[index2].LessonsAddress.Find(x => x.row == row && x.col == column);
 
-                            if (ti == null)
-                                trackingAssignedSingleLessons[index2].LessonsAddress.Add(new LessonAddress(row, column));
-                        }
+            //                if (ti == null)
+            //                    trackingAssignedSingleLessons[index2].LessonsAddress.Add(new LessonAddress(row, column));
+            //            }
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
 
             return result;
         }
@@ -143,112 +143,112 @@ namespace DemoGA
             var lessons = timetable.Lessons;
 
             // Get list available subjects (subject has no duplicate lessons)c
-            var listS = subjects.Where(x => x.HasDuplicateLessons == false).Select(x => x.Id).Distinct().ToList();
+            //var listS = subjects.Where(x => x.HasDuplicateLessons == false).Select(x => x.Id).Distinct().ToList();
 
-            foreach (var trackingItem in listTracking)
-            {
-                int maximumPair = trackingItem.TotalLessons / 2;
-                int currentPair = 0;
+            //foreach (var trackingItem in listTracking)
+            //{
+            //    int maximumPair = trackingItem.TotalLessons / 2;
+            //    int currentPair = 0;
 
-                // Find assigned double lessons info               
+            //    // Find assigned double lessons info               
 
-                var listA = trackingItem.LessonsAddress.GroupBy(x => x.row,
-                    (key, subList) => new
-                    {
-                        Key = key,
-                        SubList = subList.OrderBy(x => x.row).ToList()
-                    }).OrderBy(x => x.Key).ToList();
+            //    var listA = trackingItem.LessonsAddress.GroupBy(x => x.row,
+            //        (key, subList) => new
+            //        {
+            //            Key = key,
+            //            SubList = subList.OrderBy(x => x.row).ToList()
+            //        }).OrderBy(x => x.Key).ToList();
 
-                for (int i = 0; i < listA.Count; i++)
-                {
-                    if (listA[i].SubList.Count == 1)
-                    {
-                        var currentLesson = lessons[listA[i].SubList[0].row, listA[i].SubList[0].col];
+            //    for (int i = 0; i < listA.Count; i++)
+            //    {
+            //        if (listA[i].SubList.Count == 1)
+            //        {
+            //            var currentLesson = lessons[listA[i].SubList[0].row, listA[i].SubList[0].col];
 
-                        var index = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
+            //            var index = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
 
-                        if (index < 0)
-                        {
-                            AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
-                            tmp.SubjectId = currentLesson.Subject.Id;
-                            tmp.CurrentPair = currentPair;
-                            tmp.MaximumPair = maximumPair;
-                            tmp.SingleAddress.Add(listA[i].SubList[0]);
+            //            if (index < 0)
+            //            {
+            //                AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
+            //                tmp.SubjectId = currentLesson.Subject.Id;
+            //                tmp.CurrentPair = currentPair;
+            //                tmp.MaximumPair = maximumPair;
+            //                tmp.SingleAddress.Add(listA[i].SubList[0]);
 
-                            result.Add(tmp);
-                        }
-                        else
-                        {
-                            result[index].SingleAddress.Add(listA[i].SubList[0]);
-                        }
+            //                result.Add(tmp);
+            //            }
+            //            else
+            //            {
+            //                result[index].SingleAddress.Add(listA[i].SubList[0]);
+            //            }
 
-                        var listTmp = GetListReferenceLessons(listA[i].SubList[0], lessons, listS);
+            //            var listTmp = GetListReferenceLessons(listA[i].SubList[0], lessons, listS);
 
-                        if (listTmp != null && listTmp.Count > 0) referenceLessons.AddRange(listTmp);
-                    }
-                    else
-                    {
-                        for (int j = 0; j < listA[i].SubList.Count;)
-                        {
-                            var currentLesson = lessons[listA[i].SubList[j].row, listA[i].SubList[j].col];
+            //            if (listTmp != null && listTmp.Count > 0) referenceLessons.AddRange(listTmp);
+            //        }
+            //        else
+            //        {
+            //            for (int j = 0; j < listA[i].SubList.Count;)
+            //            {
+            //                var currentLesson = lessons[listA[i].SubList[j].row, listA[i].SubList[j].col];
 
-                            if (j < listA[i].SubList.Count - 1)
-                            {
-                                var col1 = listA[i].SubList[j].col;
-                                var col2 = listA[i].SubList[j + 1].col;
+            //                if (j < listA[i].SubList.Count - 1)
+            //                {
+            //                    var col1 = listA[i].SubList[j].col;
+            //                    var col2 = listA[i].SubList[j + 1].col;
 
-                                if (col1 == col2 + 1 || col2 == col1 + 1)
-                                {
-                                    currentPair++;
-                                    j = j + 2;
+            //                    if (col1 == col2 + 1 || col2 == col1 + 1)
+            //                    {
+            //                        currentPair++;
+            //                        j = j + 2;
 
-                                    var index = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
+            //                        var index = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
 
-                                    if (index < 0)
-                                    {
-                                        AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
-                                        tmp.SubjectId = currentLesson.Subject.Id;
-                                        tmp.CurrentPair = currentPair;
-                                        tmp.MaximumPair = maximumPair;
+            //                        if (index < 0)
+            //                        {
+            //                            AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
+            //                            tmp.SubjectId = currentLesson.Subject.Id;
+            //                            tmp.CurrentPair = currentPair;
+            //                            tmp.MaximumPair = maximumPair;
 
-                                        result.Add(tmp);
-                                    }
-                                    else
-                                    {
-                                        result[index].CurrentPair = currentPair;
-                                    }
+            //                            result.Add(tmp);
+            //                        }
+            //                        else
+            //                        {
+            //                            result[index].CurrentPair = currentPair;
+            //                        }
 
-                                    continue;
-                                }
-                            }
+            //                        continue;
+            //                    }
+            //                }
 
-                            var index2 = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
+            //                var index2 = result.FindIndex(x => x.SubjectId == currentLesson.Subject.Id);
 
-                            if (index2 < 0)
-                            {
-                                AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
-                                tmp.SubjectId = currentLesson.Subject.Id;
-                                tmp.CurrentPair = currentPair;
-                                tmp.MaximumPair = maximumPair;
-                                tmp.SingleAddress.Add(listA[i].SubList[j]);
+            //                if (index2 < 0)
+            //                {
+            //                    AssignedDuplicateLessonsInfo tmp = new AssignedDuplicateLessonsInfo();
+            //                    tmp.SubjectId = currentLesson.Subject.Id;
+            //                    tmp.CurrentPair = currentPair;
+            //                    tmp.MaximumPair = maximumPair;
+            //                    tmp.SingleAddress.Add(listA[i].SubList[j]);
 
-                                result.Add(tmp);
-                            }
-                            else
-                            {
-                                result[index2].SingleAddress.Add(listA[i].SubList[j]);
-                            }
+            //                    result.Add(tmp);
+            //                }
+            //                else
+            //                {
+            //                    result[index2].SingleAddress.Add(listA[i].SubList[j]);
+            //                }
 
-                            var listTmp = GetListReferenceLessons(listA[i].SubList[j], lessons, listS);
+            //                var listTmp = GetListReferenceLessons(listA[i].SubList[j], lessons, listS);
 
-                            if (listTmp != null && listTmp.Count > 0) referenceLessons.AddRange(listTmp);
+            //                if (listTmp != null && listTmp.Count > 0) referenceLessons.AddRange(listTmp);
 
-                            j++;
+            //                j++;
 
-                        }
-                    }
-                }
-            }
+            //            }
+            //        }
+            //    }
+            //}
 
             return result;
         }
@@ -358,79 +358,79 @@ namespace DemoGA
             int currSubjectId = 0;
 
             // Tính toán dữ liệu
-            for (int row = 0; row < lessons.GetLength(0); row++)
-            {
-                int currentLessonCount = 0;
+            //for (int row = 0; row < lessons.GetLength(0); row++)
+            //{
+            //    int currentLessonCount = 0;
 
-                for (int col = 0; col < lessons.GetLength(1); col++)
-                {
-                    if (lessons[row, col] != null)
-                    {
-                        if (lessons[row, col].IsLock == 0)
-                        {
-                            if (lessons[row, col].Subject.HasDuplicateLessons)
-                            {
-                                var index = listTracking.FindIndex(x => x.SubjectId == lessons[row, col].Subject.Id);
+            //    for (int col = 0; col < lessons.GetLength(1); col++)
+            //    {
+            //        if (lessons[row, col] != null)
+            //        {
+            //            if (lessons[row, col].IsLock == 0)
+            //            {
+            //                if (lessons[row, col].Subject.HasDuplicateLessons)
+            //                {
+            //                    var index = listTracking.FindIndex(x => x.SubjectId == lessons[row, col].Subject.Id);
 
-                                if (index < 0)
-                                {
-                                    currAddress.row = row;
-                                    currAddress.col = col;
+            //                    if (index < 0)
+            //                    {
+            //                        currAddress.row = row;
+            //                        currAddress.col = col;
 
-                                    var tmp = new AssignedDuplicateLessonsInfo();
-                                    tmp.SubjectId = lessons[row, col].Subject.Id;
-                                    tmp.MaximumPair = lessons[row, col].Subject.LessonsPerWeek / 2;
-                                    tmp.CurrentPair = 0;
-                                    tmp.SingleAddress.Add(currAddress);
+            //                        var tmp = new AssignedDuplicateLessonsInfo();
+            //                        tmp.SubjectId = lessons[row, col].Subject.Id;
+            //                        tmp.MaximumPair = lessons[row, col].Subject.LessonsPerWeek / 2;
+            //                        tmp.CurrentPair = 0;
+            //                        tmp.SingleAddress.Add(currAddress);
 
-                                    listTracking.Add(tmp);
-                                }
-                                else
-                                {
-                                    if (currSubjectId == lessons[row, col].Subject.Id) // Tiết trước đó là môn của tiết đang xét
-                                    {
-                                        currentLessonCount++;
-                                        listTracking[index].SingleAddress.Add(new LessonAddress(row, col));
+            //                        listTracking.Add(tmp);
+            //                    }
+            //                    else
+            //                    {
+            //                        if (currSubjectId == lessons[row, col].Subject.Id) // Tiết trước đó là môn của tiết đang xét
+            //                        {
+            //                            currentLessonCount++;
+            //                            listTracking[index].SingleAddress.Add(new LessonAddress(row, col));
 
-                                        if (currAddress.row == row && currentLessonCount < 3) listTracking[index].CurrentPair++;
-                                    }
-                                    else
-                                    {
-                                        currentLessonCount = 1;
-                                    }
-                                }
+            //                            if (currAddress.row == row && currentLessonCount < 3) listTracking[index].CurrentPair++;
+            //                        }
+            //                        else
+            //                        {
+            //                            currentLessonCount = 1;
+            //                        }
+            //                    }
 
-                                currAddress.row = row;
-                                currAddress.col = col;
-                            }
-                        }
+            //                    currAddress.row = row;
+            //                    currAddress.col = col;
+            //                }
+            //            }
 
-                        currSubjectId = lessons[row, col].Subject.Id;
-                    }
-                    else
-                    {
-                        currSubjectId = 0;
-                        currAddress.row = row;
-                        currAddress.col = col;
-                        currentLessonCount = 0;
-                    }
-                }
-            }
+            //            currSubjectId = lessons[row, col].Subject.Id;
+            //        }
+            //        else
+            //        {
+            //            currSubjectId = 0;
+            //            currAddress.row = row;
+            //            currAddress.col = col;
+            //            currentLessonCount = 0;
+            //        }
+            //    }
+            //}
 
-            // Đánh điểm
-            foreach (var item in listTracking)
-            {
-                if (item.CurrentPair != item.MaximumPair)
-                {
-                    score--;
+            //// Đánh điểm
+            //foreach (var item in listTracking)
+            //{
+            //    if (item.CurrentPair != item.MaximumPair)
+            //    {
+            //        score--;
 
-                    var e = new TrackingError();
-                    e.ErrorType = 6;
-                    e.Reason = String.Format("Môn {0} không đủ số tiết đúp. Số tiết xếp được: {1}", item.SubjectId, item.CurrentPair);
+            //        var e = new TrackingError();
+            //        e.ErrorType = 6;
+            //        e.Reason = String.Format("Môn {0} không đủ số tiết đúp. Số tiết xếp được: {1}", item.SubjectId, item.CurrentPair);
 
-                    timetable.Err.Add(e);
-                }
-            }
+            //        timetable.Err.Add(e);
+            //    }
+            //}
 
             return score;
         }

@@ -65,57 +65,188 @@ namespace DemoGA
         public static List<SubjectInfo> GetListSubject(string section)
         {
             List<SubjectInfo> result = new List<SubjectInfo>();
-            
-            // SHDC
+
+            //! SHDC
             SubjectInfo subject = new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION);
-            // Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
+            //! Hardcode, nếu chính khóa là buổi sáng thì SHDC, SHCN là tiết 1, tiết 2 Thứ 2
             if (section == MORNING_SECTION)
             {
                 subject.FixedLessons.Add(new LessonAddress(0, 0)); // tiết 1 thứ 2
-                subject.FixedLessons.Add(new LessonAddress(0, 1)); // tiết 2 thứ 2
             }
             else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
             {
                 subject.FixedLessons.Add(new LessonAddress(4, 4)); // tiết 5 thứ 6
+            }
+            result.Add(subject);
+
+            //! SHCN
+            subject = new SubjectInfo(2, "SHCN", 1, 1, PRIMARY_SECTION);
+            if (section == MORNING_SECTION)
+            {
+                subject.FixedLessons.Add(new LessonAddress(0, 1)); // tiết 2 thứ 2
+            }
+            else if (section == AFTERNOON_SECTION) // Hardcode, nếu chính khóa là buổi chiều thì SHDC, SHCN là tiết 4, tiết 5 Thứ 6
+            {
                 subject.FixedLessons.Add(new LessonAddress(4, 3)); // tiết 4 thứ 6
             }
             result.Add(subject);
-            
-            //! SHCN
-            subject = new SubjectInfo(2, "SHDC", 1, 1, PRIMARY_SECTION);
-            result.Add(subject);
-            
+
             //! Sử
             subject = new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION);
             subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
             {
                 new LessonsPerSection(PRIMARY_SECTION, 2)
             });
-            subject.Detail.AddRange(new List<LessonsPerSectionDetail>
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 2),
+                new LessonsPerSectionDetail(2, 0),
+            });
+            result.Add(subject);
+
+            //! Hóa
+            subject = new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 3)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 1),
+                new LessonsPerSectionDetail(2, 1),
+                new LessonsPerSectionDetail(3, 0),
+            });
+            result.Add(subject);
+
+            //! Lý
+            subject = new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 3)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 1),
+                new LessonsPerSectionDetail(2, 1),
+                new LessonsPerSectionDetail(3, 0)
+            });
+            result.Add(subject);
+
+            //! Văn
+            subject = new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 5)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 0),
+                new LessonsPerSectionDetail(2, 1),
+                new LessonsPerSectionDetail(3, 1)
+            });
+            result.Add(subject);
+
+            //! Toán
+            subject = new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 5)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 0),
+                new LessonsPerSectionDetail(2, 1),
+                new LessonsPerSectionDetail(3, 1)
+            });
+            result.Add(subject);
+
+            //! Anh
+            subject = new SubjectInfo(8, "Anh", 2, 2, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 2)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 2),
+                new LessonsPerSectionDetail(2, 0),
+            });
+            result.Add(subject);
+
+            //! Sinh
+            subject = new SubjectInfo(9, "Sinh", 2, 2, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 2)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 2),
+                new LessonsPerSectionDetail(2, 0),
+            });
+            result.Add(subject);
+
+            //! Địa
+            subject = new SubjectInfo(10, "Địa", 1, 1, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 1)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
             {
                 new LessonsPerSectionDetail(1, 1)
             });
             result.Add(subject);
-            
-            
 
-            result.AddRange(new List<SubjectInfo> {
-                new SubjectInfo(1, "SHDC", 1, 1, PRIMARY_SECTION), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi
-                new SubjectInfo(2, "SHCN", 1, 1, PRIMARY_SECTION),
-                new SubjectInfo(3, "Sử", 2, 2, PRIMARY_SECTION),
-                new SubjectInfo(4, "Hóa", 3, 2, PRIMARY_SECTION), // ID, Tên môn, Số tiết 1 tuần, Số tiết liên tiếp tối đa, Tiết thuộc chính khóa/trái buổi, Có tiết đúp hay không
-                new SubjectInfo(5, "Lý", 3, 2, PRIMARY_SECTION),
-                new SubjectInfo(6, "Văn", 5, 3, PRIMARY_SECTION),
-                new SubjectInfo(7, "Toán", 5, 3, PRIMARY_SECTION),
-                new SubjectInfo(8, "Anh", 2, 2, PRIMARY_SECTION),
-                new SubjectInfo(9, "Sinh", 2, 2, PRIMARY_SECTION),
-                new SubjectInfo(10, "Địa", 1, 1,  PRIMARY_SECTION),
-                new SubjectInfo(11, "Tin", 1, 1, PRIMARY_SECTION),
-                new SubjectInfo(12, "GDCD", 1, 1,  PRIMARY_SECTION),
-                new SubjectInfo(13, "Thể dục", 2, 2,  SECONDARY_SECTION),
-                new SubjectInfo(14, "GDQP", 2, 2,  SECONDARY_SECTION),
-            }
-            );
+            //! Tin
+            subject = new SubjectInfo(11, "Tin", 1, 1, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 1)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 1)
+            });
+            result.Add(subject);
+
+            //! GDCD
+            subject = new SubjectInfo(12, "GDCD", 1, 1, PRIMARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(PRIMARY_SECTION, 1)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 1)
+            });
+            result.Add(subject);
+
+            //! Thể dục
+            subject = new SubjectInfo(13, "Thể dục", 2, 2, SECONDARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(SECONDARY_SECTION, 2)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 0),
+                new LessonsPerSectionDetail(2, 1),
+            });
+            result.Add(subject);
+
+            //! GDQP
+            subject = new SubjectInfo(14, "GDQP", 2, 2, SECONDARY_SECTION);
+            subject.LessonsPerSections.AddRange(new List<LessonsPerSection>
+            {
+                new LessonsPerSection(SECONDARY_SECTION, 2)
+            });
+            subject.LessonsPerSectionDetails.AddRange(new List<LessonsPerSectionDetail>
+            {
+                new LessonsPerSectionDetail(1, 0),
+                new LessonsPerSectionDetail(2, 1),
+            });
+            result.Add(subject);
 
             return result;
         }
@@ -131,6 +262,17 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[3];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(0,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(1,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(2,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -142,6 +284,17 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[12];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(3,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.FRIDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(4,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(5,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -153,6 +306,15 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[10];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 3, new List<LessonAddress> {
+                    new LessonAddress(1,3),
+                    new LessonAddress(1,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(2,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -164,6 +326,15 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[21];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 3, new List<LessonAddress> {
+                    new LessonAddress(2,3),
+                    new LessonAddress(2,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(3,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -175,6 +346,15 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[9];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 3, new List<LessonAddress> {
+                    new LessonAddress(3,3),
+                    new LessonAddress(3,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.FRIDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(4,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -186,6 +366,15 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[13];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.FRIDAY, 3, new List<LessonAddress> {
+                    new LessonAddress(4,3),
+                    new LessonAddress(4,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(5,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -197,6 +386,13 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[22];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
+                    new LessonAddress(3,2),
+                    new LessonAddress(3,3),
+                    new LessonAddress(3,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -208,6 +404,13 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[28];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.FRIDAY, 2, new List<LessonAddress> {
+                    new LessonAddress(4,2),
+                    new LessonAddress(4,3),
+                    new LessonAddress(4,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -219,6 +422,13 @@ namespace DemoGA
             c.MainSection = MORNING_SECTION;
             c.HeadTeacher = teachers[23];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
+                    new LessonAddress(5,2),
+                    new LessonAddress(5,3),
+                    new LessonAddress(5,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -230,6 +440,17 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[32];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(0,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(1,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(2,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -241,6 +462,17 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[27];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(1,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(2,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(3,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -252,6 +484,13 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[29];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
+                    new LessonAddress(5,2),
+                    new LessonAddress(5,3),
+                    new LessonAddress(5,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -263,6 +502,17 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[24];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(0,0),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(1,0),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(2,0),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -275,6 +525,17 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[29];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(0,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(3,4),
+                }),
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(5,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -286,6 +547,13 @@ namespace DemoGA
             c.MainSection = AFTERNOON_SECTION;
             c.HeadTeacher = teachers[24];
             c.Subjects = GetListSubject(c.MainSection);
+            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
+                    new LessonAddress(3,2),
+                    new LessonAddress(3,3),
+                    new LessonAddress(3,4),
+                }),
+            });
 
             result.Add(c);
             #endregion
@@ -293,7 +561,7 @@ namespace DemoGA
             return result;
         }
 
-        // Lấy danh sách các môn học xếp tuyến tính vào TKB
+        //! Lấy danh sách các môn học xếp tuyến tính vào TKB
         public static Lessons[,] GetInputLessons(List<SubjectInfo> subjects, List<TeacherInfo> teachers, List<TeachingDistribution> teachingDistributions)
         {
             Lessons[,] result = new Lessons[WEEKDAY, LESSONSPERSECTION];
@@ -339,7 +607,7 @@ namespace DemoGA
             return result;
         }
 
-        // Phân công giảng dạy
+        //! Phân công giảng dạy
         public static List<TeachingDistribution> GetTeachingDistributions()
         {
             List<TeachingDistribution> result = new List<TeachingDistribution>();
@@ -790,7 +1058,7 @@ namespace DemoGA
             return result;
         }
 
-        // Xáo trộn các tiết trong 1 TKB => làm đầu vào để chạy thuật toán
+        //! Xáo trộn các tiết trong 1 TKB => làm đầu vào để chạy thuật toán
         public static T[,] Shuffle<T>(Random random, T[,] array)
         {
             int lengthRow = array.GetLength(1); // Số lượng phần tử của chiều thứ 2 (tiết) [6, 5] => getlength(0) => 6; getlength(1) => 5
