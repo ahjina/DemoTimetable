@@ -256,7 +256,7 @@ namespace DemoGA
 
         // Phối giống
         public static List<Timetable> Crossover(Timetable p1, Timetable p2, double crossRate)
-        {
+        {                   
             Timetable c1 = new Timetable();
             Timetable c2 = new Timetable();
 
@@ -272,19 +272,12 @@ namespace DemoGA
                 {
                     for (int j = 0; j < p1.Lessons.GetLength(1); j++)
                     {
-                        // Nếu tiết đang xét là tiết cố định => gán cho TKB con tiết đó
-                        if (p1.Lessons[i, j] != null && p1.Lessons[i, j].IsLock == 1)
+                        //! Nếu tiết đang xét là tiết cố định => gán cho TKB con tiết đó
+                        //! Hiện tại null là tiết trống đã được sắp xếp => không đổi
+                        if ((p1.Lessons[i, j] != null && p1.Lessons[i, j].IsLock == 1) || p1.Lessons[i, j] == null)
                         {
                             c1.Lessons[i, j] = p1.Lessons[i, j];
                             c2.Lessons[i, j] = p2.Lessons[i, j];
-                            continue;
-                        }
-
-                        //! Hiện tại null là tiết trống đã được sắp xếp => không đổi
-                        if (p1.Lessons[i, j] == null)
-                        {
-                            c1.Lessons[i, j] = null;
-                            c2.Lessons[i, j] = null;
                             continue;
                         }
 
@@ -329,6 +322,7 @@ namespace DemoGA
 
                             // Nếu tiết đang xét là tiết cố định => skip
                             if ((temp != null && temp.IsLock == 1) || (prev != null && prev.IsLock == 1)) continue;
+                            if (temp == null || prev == null) continue;
 
                             sample.Lessons[row, col] = prev;
                             sample.Lessons[row, col - 1] = temp;

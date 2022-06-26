@@ -441,13 +441,13 @@ namespace DemoGA
             c.HeadTeacher = teachers[32];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
                     new LessonAddress(0,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(1,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(2,4),
                 }),
             });
@@ -463,13 +463,13 @@ namespace DemoGA
             c.HeadTeacher = teachers[27];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(1,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(2,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
                     new LessonAddress(3,4),
                 }),
             });
@@ -485,7 +485,7 @@ namespace DemoGA
             c.HeadTeacher = teachers[29];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
                     new LessonAddress(5,2),
                     new LessonAddress(5,3),
                     new LessonAddress(5,4),
@@ -503,13 +503,13 @@ namespace DemoGA
             c.HeadTeacher = teachers[24];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
                     new LessonAddress(0,0),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(1,0),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
                     new LessonAddress(2,0),
                 }),
             });
@@ -526,14 +526,14 @@ namespace DemoGA
             c.HeadTeacher = teachers[29];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
                     new LessonAddress(0,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
                     new LessonAddress(3,4),
                 }),
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(5,4),
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
+                    new LessonAddress(5,0),
                 }),
             });
 
@@ -548,7 +548,7 @@ namespace DemoGA
             c.HeadTeacher = teachers[24];
             c.Subjects = GetListSubject(c.MainSection);
             c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(MORNING_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
+                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
                     new LessonAddress(3,2),
                     new LessonAddress(3,3),
                     new LessonAddress(3,4),
