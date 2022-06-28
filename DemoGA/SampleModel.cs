@@ -81,25 +81,6 @@ namespace DemoGA
     }
 
     [Serializable]
-    public class ClassSubjectInfo
-    {
-        public SubjectInfo SubjectInfo { get; set; }
-        public TeacherInfo TeacherInfo { get; set; }
-
-        public ClassSubjectInfo()
-        {
-            SubjectInfo = new SubjectInfo();
-            TeacherInfo = new TeacherInfo();
-        }
-
-        public ClassSubjectInfo(SubjectInfo subjectInfo, TeacherInfo teacherInfo)
-        {
-            SubjectInfo = subjectInfo;
-            TeacherInfo = teacherInfo;
-        }
-    }
-
-    [Serializable]
     public class ClassInfo
     {
         public int Id { get; set; }

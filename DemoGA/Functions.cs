@@ -115,12 +115,98 @@ namespace DemoGA
             }
         }
 
+        //! 4. Xếp các tiết đúp 3 => đúp 2
+        public static void AssignDuplicateLessons(List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons, ref Timetable timetable)
+        {
+            var lessons = timetable.Lessons;
+
+            //todo Lấy danh sách các môn có tiết đúp 3
+            var tripleLessonsSubjects = subjects.Where(x => x.LessonsPerSectionDetails.Any(y => y.NumOfContinousLessons == 3)).ToList();
+
+            if (tripleLessonsSubjects.Count > 0)
+            {
+                List<LessonAddress> addressForReplace = new List<LessonAddress>();
+                int currentContinousLessons = 0;
+
+                //todo Loop qua các môn học
+                for (int i = 0; i < tripleLessonsSubjects.Count; i++)
+                {
+                    //todo Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB
+                    var currentAssignedLessons = GetSubjectAssignedLessonsAddress(lessons, tripleLessonsSubjects[i].Id);
+
+                    //todo Loop qua các ngày trong tuần
+                    for (int row = 0; row < lessons.GetLength(0); row++)
+                    {
+                        if (currentContinousLessons == 3) break;
+                        else
+                        {
+                            currentContinousLessons = 0;
+                            addressForReplace = new List<LessonAddress>();
+                        }
+
+                        //todo Loop qua các tiết trong ngày
+                        for (int column = 0; column < lessons.GetLength(1); column++)
+                        {
+                            if (lessons[row, column] == null) continue; //! Bỏ qua các tiết trống
+                            if (lessons[row, column].IsLock == 1) continue; //! Bỏ qua tiết đã bị khóa
+
+                            var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
+
+                            if (td == null)
+                            {
+                                currentContinousLessons++;
+                                addressForReplace.Add(new LessonAddress(row, column));
+                            }
+                            else
+                            {
+                                var index = td.AssignedLessonInfos.FindIndex(x => x.Address.row == row && x.Address.col == column);
+
+                                if (index < 0)
+                                {
+                                    currentContinousLessons++;
+                                    addressForReplace.Add(new LessonAddress(row, column));
+                                }
+                                else continue;
+                            }
+
+                            if (currentContinousLessons == 3) break;
+                        }
+                    }
+
+                    //todo Tiến hành swap cho các tiết đúp về gần nhau & lock các tiết đó lại
+                    if (currentContinousLessons == 3)
+                    {
+                        for (int j = 0; j < currentContinousLessons; j++)
+                        {
+                            MiniSwap(ref lessons[addressForReplace[j].row, addressForReplace[j].col], ref lessons[currentAssignedLessons[j].row, currentAssignedLessons[j].col]);
+                        }
+                    }
+                }
+            }
+        }
+
+        //! 4.1 Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB
+        private static List<LessonAddress> GetSubjectAssignedLessonsAddress(Lessons[,] lessons, int subjectId)
+        {
+            List<LessonAddress> result = new List<LessonAddress>();
+
+            for (int row = 0; row < lessons.GetLength(0); row++)
+            {
+                for (int column = 0; column < lessons.GetLength(1); column++)
+                {
+                    if (lessons[row, column].Subject.Id == subjectId)
+                        result.Add(new LessonAddress(row, column));
+                }
+            }
+
+            return result;
+        }
+
         public static int EvaluationFitness(ref Timetable sample, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             int score = 0;
 
             List<MaximumLessons> trackingML = new List<MaximumLessons>();
-            List<TrackingAssignedLessons> trackingAL = new List<TrackingAssignedLessons>(); // Kiểm tra những tiết đã xếp cho giáo viên 
             Lessons[,] lessons = sample.Lessons; // Danh sách các tiết
             int classId = sample.ClassInfo.Id;
             string section = sample.Section;
@@ -193,13 +279,6 @@ namespace DemoGA
             // RULE 3. Lessons per week
             CheckLessonsPerWeekRule(ref score, ref sample, subjects, trackingML);
 
-            //sample.Score = score;
-
-            //// RULE 4. Subject has duplicate lessons
-            //HandleDuplicateLessonsAssign.RunSample(ref sample);
-
-            //score = sample.Score;
-
             return score;
         }
 
@@ -256,7 +335,7 @@ namespace DemoGA
 
         // Phối giống
         public static List<Timetable> Crossover(Timetable p1, Timetable p2, double crossRate)
-        {                   
+        {
             Timetable c1 = new Timetable();
             Timetable c2 = new Timetable();
 
@@ -628,6 +707,13 @@ namespace DemoGA
                     }
                 }
             }
+        }
+
+        private static void MiniSwap(ref Lessons a, ref Lessons b)
+        {
+            var temp = a;
+            a = b;
+            b = temp;
         }
     }
 }
