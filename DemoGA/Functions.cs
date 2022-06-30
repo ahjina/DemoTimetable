@@ -12,12 +12,14 @@ namespace DemoGA
     public static class Functions
     {
         //! 1. Tạo TKB
-        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<SubjectInfo> subjects, List<TeachingDistribution> teachingDistributions, string section)
+        public static List<Timetable> GetInput(int n_pop, ClassInfo classInfo, List<TeacherInfo> teachers, List<SubjectInfo> subjects, List<TeachingDistribution> teachingDistributions, string section, List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
         {
             List<Timetable> result = new List<Timetable>();
 
             //! Get samples
             Lessons[,] lessons = InitData.GetInputLessons(subjects, teachers, teachingDistributions);
+
+            bool isMainSection = section == classInfo.MainSection;
 
             for (int i = 0; i < n_pop; i++)
             {
@@ -27,6 +29,9 @@ namespace DemoGA
 
                 AssignFixedLessons(subjects, ref t);
                 AssignOffLessons(classInfo.SectionDetailInfos, ref t);
+
+                AssignDuplicateLessons(subjects, teacherAssignedLessons, ref t, 3, isMainSection);
+                AssignDuplicateLessons(subjects, teacherAssignedLessons, ref t, 2, isMainSection);
 
                 result.Add(t);
             }
@@ -115,77 +120,7 @@ namespace DemoGA
             }
         }
 
-        //! 4. Xếp các tiết đúp 3 => đúp 2
-        public static void AssignDuplicateLessons(List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons, ref Timetable timetable)
-        {
-            var lessons = timetable.Lessons;
-
-            //todo Lấy danh sách các môn có tiết đúp 3
-            var tripleLessonsSubjects = subjects.Where(x => x.LessonsPerSectionDetails.Any(y => y.NumOfContinousLessons == 3)).ToList();
-
-            if (tripleLessonsSubjects.Count > 0)
-            {
-                List<LessonAddress> addressForReplace = new List<LessonAddress>();
-                int currentContinousLessons = 0;
-
-                //todo Loop qua các môn học
-                for (int i = 0; i < tripleLessonsSubjects.Count; i++)
-                {
-                    //todo Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB
-                    var currentAssignedLessons = GetSubjectAssignedLessonsAddress(lessons, tripleLessonsSubjects[i].Id);
-
-                    //todo Loop qua các ngày trong tuần
-                    for (int row = 0; row < lessons.GetLength(0); row++)
-                    {
-                        if (currentContinousLessons == 3) break;
-                        else
-                        {
-                            currentContinousLessons = 0;
-                            addressForReplace = new List<LessonAddress>();
-                        }
-
-                        //todo Loop qua các tiết trong ngày
-                        for (int column = 0; column < lessons.GetLength(1); column++)
-                        {
-                            if (lessons[row, column] == null) continue; //! Bỏ qua các tiết trống
-                            if (lessons[row, column].IsLock == 1) continue; //! Bỏ qua tiết đã bị khóa
-
-                            var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
-
-                            if (td == null)
-                            {
-                                currentContinousLessons++;
-                                addressForReplace.Add(new LessonAddress(row, column));
-                            }
-                            else
-                            {
-                                var index = td.AssignedLessonInfos.FindIndex(x => x.Address.row == row && x.Address.col == column);
-
-                                if (index < 0)
-                                {
-                                    currentContinousLessons++;
-                                    addressForReplace.Add(new LessonAddress(row, column));
-                                }
-                                else continue;
-                            }
-
-                            if (currentContinousLessons == 3) break;
-                        }
-                    }
-
-                    //todo Tiến hành swap cho các tiết đúp về gần nhau & lock các tiết đó lại
-                    if (currentContinousLessons == 3)
-                    {
-                        for (int j = 0; j < currentContinousLessons; j++)
-                        {
-                            MiniSwap(ref lessons[addressForReplace[j].row, addressForReplace[j].col], ref lessons[currentAssignedLessons[j].row, currentAssignedLessons[j].col]);
-                        }
-                    }
-                }
-            }
-        }
-
-        //! 4.1 Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB
+        //! 4.1 Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB, các tiết chưa được xếp đúp
         private static List<LessonAddress> GetSubjectAssignedLessonsAddress(Lessons[,] lessons, int subjectId)
         {
             List<LessonAddress> result = new List<LessonAddress>();
@@ -194,12 +129,137 @@ namespace DemoGA
             {
                 for (int column = 0; column < lessons.GetLength(1); column++)
                 {
-                    if (lessons[row, column].Subject.Id == subjectId)
+                    if (lessons[row, column] == null) continue;
+
+                    if (lessons[row, column].Subject.Id == subjectId && lessons[row, column].IsLock == 0)
                         result.Add(new LessonAddress(row, column));
                 }
             }
 
             return result;
+        }
+
+        //! 4.2 Xếp các tiết đúp 3, đúp 2
+        public static void AssignDuplicateLessons(List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons, ref Timetable timetable, int continousLessonsCount, bool isMainSection)
+        {
+            var lessons = timetable.Lessons;
+
+            //todo Lấy danh sách các môn có tiết đúp 
+            var duplicateLessonsSubjects = subjects.Where(x => x.LessonsPerSectionDetails.Any(y => y.NumOfContinousLessons == continousLessonsCount && y.NumOfSections > 0)).ToList();
+
+            if (duplicateLessonsSubjects.Count > 0)
+            {
+                int currentContinousLessons = 0;
+
+                //todo Loop qua các môn học
+                for (int i = 0; i < duplicateLessonsSubjects.Count; i++)
+                {
+                    List<LessonAddress> addressForReplace = new List<LessonAddress>();
+                    List<LessonAddress> specialCases = new List<LessonAddress>();
+
+                    //todo Lấy số buổi cần xếp tiết đúp
+                    var numOfSections = duplicateLessonsSubjects[i].LessonsPerSectionDetails.Find(x => x.NumOfContinousLessons == continousLessonsCount).NumOfSections;
+                    var currentSection = 0;
+
+                    //todo Lấy danh sách địa chỉ các tiết của môn hiện đang được xếp trong TKB
+                    var currentAssignedLessons = GetSubjectAssignedLessonsAddress(lessons, duplicateLessonsSubjects[i].Id);
+
+                    //todo Loop qua các ngày trong tuần
+                    for (int row = 0; row < lessons.GetLength(0); row++)
+                    {
+                        var temp = new List<LessonAddress>();
+
+                        if (currentContinousLessons == continousLessonsCount && currentSection == numOfSections) break;
+                        else currentContinousLessons = 0;
+
+                        //todo Loop qua các tiết trong ngày
+                        for (int column = 0; column < lessons.GetLength(1); column++)
+                        {
+                            if (lessons[row, column] == null && isMainSection) continue; //! Bỏ qua các tiết trống nếu là chính khóa
+                            if (lessons[row, column] != null && lessons[row, column].IsLock == 1) continue; //! Bỏ qua tiết đã bị khóa
+
+                            if (lessons[row, column] == null) //! Lấy nếu là tiết trống trái buổi
+                            {
+                                currentContinousLessons++;
+                                temp.Add(new LessonAddress(row, column));
+                            }
+                            else
+                            {
+                                if (CheckLessonAddressExists(currentAssignedLessons, new LessonAddress(row, column)))
+                                {
+                                    currentContinousLessons++;
+                                    specialCases.Add(new LessonAddress(row, column));
+                                }
+                                else
+                                {
+                                    var td = teacherAssignedLessons.Find(x => x.TeacherId == lessons[row, column].Teacher.Id);
+
+                                    if (td == null)
+                                    {
+                                        currentContinousLessons++;
+                                        temp.Add(new LessonAddress(row, column));
+                                    }
+                                    else
+                                    {
+                                        var index = td.AssignedLessonInfos.FindIndex(x => x.Address.row == row && x.Address.col == column);
+
+                                        if (index < 0)
+                                        {
+                                            currentContinousLessons++;
+                                            temp.Add(new LessonAddress(row, column));
+                                        }
+                                        else continue;
+                                    }
+                                }
+
+
+                            }
+
+                            if (currentContinousLessons == continousLessonsCount)
+                            {
+                                if (currentSection < numOfSections)
+                                {
+                                    currentSection++;
+
+                                    addressForReplace.AddRange(temp);
+
+                                    temp = new List<LessonAddress>();
+                                }
+                                else break;
+                            }
+                        }
+
+                        //todo Tiến hành swap cho các tiết đúp về gần nhau & lock các tiết đó lại
+                        if (currentContinousLessons == continousLessonsCount)
+                        {
+                            var k = 0;
+                            for (int j = 0; j < addressForReplace.Count; j++)
+                            {
+                                for (k = 0; k < currentAssignedLessons.Count;)
+                                {
+                                    if (CheckLessonAddressExists(specialCases, new LessonAddress(currentAssignedLessons[k].row, currentAssignedLessons[k].col)))
+                                    {
+                                        lessons[currentAssignedLessons[k].row, currentAssignedLessons[k].col].IsLock = 1;
+                                        k++;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        MiniSwap(ref lessons[addressForReplace[j].row, addressForReplace[j].col], ref lessons[currentAssignedLessons[k].row, currentAssignedLessons[k].col]);
+
+                                        if (lessons[addressForReplace[j].row, addressForReplace[j].col] != null)
+                                            lessons[addressForReplace[j].row, addressForReplace[j].col].IsLock = 1;
+                                        k++;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            addressForReplace = new List<LessonAddress>();
+                        }
+                    }
+                }
+            }
         }
 
         public static int EvaluationFitness(ref Timetable sample, List<SubjectInfo> subjects, List<TeacherAssignedLessonsInfo> teacherAssignedLessons)
@@ -428,7 +488,7 @@ namespace DemoGA
 
             for (int i = 0; i < n_pop; i++)
             {
-                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, teachers, subjects, td, timeTable.Section);
+                List<Timetable> input = GetInput(n_pop, timeTable.ClassInfo, teachers, subjects, td, timeTable.Section, teacherAssignedLessons);
 
                 sampleContainer.Add(new TimetableContainer(input));
             }
@@ -714,6 +774,16 @@ namespace DemoGA
             var temp = a;
             a = b;
             b = temp;
+        }
+
+        private static bool CheckLessonAddressExists(List<LessonAddress> lessonAddresses, LessonAddress addressForCheck)
+        {
+            for (int i = 0; i < lessonAddresses.Count; i++)
+            {
+                if (lessonAddresses[i].row == addressForCheck.row && lessonAddresses[i].col == addressForCheck.col) return true;
+            }
+
+            return false;
         }
     }
 }

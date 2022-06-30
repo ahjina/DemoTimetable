@@ -225,7 +225,6 @@ namespace DemoGA
         public int Score { get; set; } // 0 điểm là best
         public List<TrackingError> Err { get; set; } // Tracking lỗi nếu TKB không tính được 0 điểm
         public string Section { get; set; } // TKB thuộc buổi sáng / chiều
-        public List<AssignedDuplicateLessonsInfo> ADL { get; set; }
 
         public Timetable()
         {
@@ -233,7 +232,6 @@ namespace DemoGA
             ClassInfo = new ClassInfo();
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDuplicateLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo)
@@ -242,7 +240,6 @@ namespace DemoGA
             ClassInfo = classInfo;
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDuplicateLessonsInfo>();
         }
 
         public Timetable(ClassInfo? classInfo, Lessons[,]? lessons, string section)
@@ -251,7 +248,6 @@ namespace DemoGA
             Lessons = lessons;
             Score = 0;
             Err = new List<TrackingError>();
-            ADL = new List<AssignedDuplicateLessonsInfo>();
             Section = section;
         }
     }
@@ -334,7 +330,7 @@ namespace DemoGA
     {
         public int row { get; set; }
         public int col { get; set; }
-        
+
         public LessonAddress(int r, int c)
         {
             row = r;

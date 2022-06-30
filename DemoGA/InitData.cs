@@ -433,130 +433,130 @@ namespace DemoGA
             result.Add(c);
             #endregion
 
-            #region Lớp 11A10
-            c = new ClassInfo();
-            c.Id = 10;
-            c.Name = "11A10";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[32];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(0,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(1,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(2,4),
-                }),
-            });
+            //#region Lớp 11A10
+            //c = new ClassInfo();
+            //c.Id = 10;
+            //c.Name = "11A10";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[32];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(0,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(1,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(2,4),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
-            #region Lớp 11A11
-            c = new ClassInfo();
-            c.Id = 11;
-            c.Name = "11A11";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[27];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(1,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(2,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(3,4),
-                }),
-            });
+            //#region Lớp 11A11
+            //c = new ClassInfo();
+            //c.Id = 11;
+            //c.Name = "11A11";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[27];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(1,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(2,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(3,4),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
-            #region Lớp 11A12
-            c = new ClassInfo();
-            c.Id = 12;
-            c.Name = "11A12";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[29];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
-                    new LessonAddress(5,2),
-                    new LessonAddress(5,3),
-                    new LessonAddress(5,4),
-                }),
-            });
+            //#region Lớp 11A12
+            //c = new ClassInfo();
+            //c.Id = 12;
+            //c.Name = "11A12";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[29];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 2, new List<LessonAddress> {
+            //        new LessonAddress(5,2),
+            //        new LessonAddress(5,3),
+            //        new LessonAddress(5,4),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
-            #region Lớp 11A13
-            c = new ClassInfo();
-            c.Id = 13;
-            c.Name = "11A13";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[24];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(0,0),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(1,0),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(2,0),
-                }),
-            });
+            //#region Lớp 11A13
+            //c = new ClassInfo();
+            //c.Id = 13;
+            //c.Name = "11A13";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[24];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(0,0),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.TUESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(1,0),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.WEDNESDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(2,0),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
 
-            #region Lớp 11A14
-            c = new ClassInfo();
-            c.Id = 14;
-            c.Name = "11A14";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[29];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(0,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(3,4),
-                }),
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
-                    new LessonAddress(5,0),
-                }),
-            });
+            //#region Lớp 11A14
+            //c = new ClassInfo();
+            //c.Id = 14;
+            //c.Name = "11A14";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[29];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.MONDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(0,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(3,4),
+            //    }),
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.SATURDAY, 4, new List<LessonAddress> {
+            //        new LessonAddress(5,0),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
-            #region Lớp 11A15
-            c = new ClassInfo();
-            c.Id = 15;
-            c.Name = "11A15";
-            c.MainSection = AFTERNOON_SECTION;
-            c.HeadTeacher = teachers[24];
-            c.Subjects = GetListSubject(c.MainSection);
-            c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
-                new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
-                    new LessonAddress(3,2),
-                    new LessonAddress(3,3),
-                    new LessonAddress(3,4),
-                }),
-            });
+            //#region Lớp 11A15
+            //c = new ClassInfo();
+            //c.Id = 15;
+            //c.Name = "11A15";
+            //c.MainSection = AFTERNOON_SECTION;
+            //c.HeadTeacher = teachers[24];
+            //c.Subjects = GetListSubject(c.MainSection);
+            //c.SectionDetailInfos.AddRange(new List<SectionDetailInfo> {
+            //    new SectionDetailInfo(AFTERNOON_SECTION, (int)CustomDayOfWeek.THURSDAY, 2, new List<LessonAddress> {
+            //        new LessonAddress(3,2),
+            //        new LessonAddress(3,3),
+            //        new LessonAddress(3,4),
+            //    }),
+            //});
 
-            result.Add(c);
-            #endregion
+            //result.Add(c);
+            //#endregion
 
             return result;
         }
